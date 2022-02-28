@@ -59,9 +59,11 @@ class LibraryGame(BoxLayout):
 			if (version.parse(installs[0].split('-v-')[-1]) < version.parse(self.game.version)):
 				self.installstate = PENDING_UPDATE
 		for thread in self.downloadthreads:
-			if thread.is_alive():
-				self.installstate = UPDATING
-		print(self.installstate)
+			try:
+				if thread.is_alive():
+					self.installstate = UPDATING
+			except Exception as e:
+				print(e)
 		self.update_install_state(self.installstate)
 
 	def update_install_state(self, state):
@@ -82,7 +84,7 @@ class LibraryGame(BoxLayout):
 
 	def activate(self):
 		self.check_install_state()
-		if self.installstate == NOT_INSTALLED:
+		if self.installstate == NOT_INSTALLED or self.installstate == PENDING_UPDATE:
 			self.downloadthreads.append(Thread(target=self._install).start())
 		elif self.installstate == UP_TO_DATE:
 			try:
@@ -103,10 +105,9 @@ class LibraryGame(BoxLayout):
 				total_length = r.headers.get('content-length')
 				written = 0
 
-				for chunk in r.iter_content(chunk_size=8192):
+				for chunk in r.iter_content(chunk_size=16384):
 					f.write(chunk)
 					written += len(chunk)
-					print(written / int(total_length))
 					self.ids.progress.value = written / int(total_length)
 		with ZipFile(local_filename + '.zip', 'r') as zip:
 			zip.extractall(local_filename)
