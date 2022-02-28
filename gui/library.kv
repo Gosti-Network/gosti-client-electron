@@ -1,0 +1,40 @@
+
+<LibraryView>:
+	do_scroll_x: False
+	do_scroll_y: True
+
+<LibraryList>:
+	cols: 1
+	size_hint: 1, None
+	padding: 10
+	spacing: 10
+
+<LibraryGame>:
+	height: 40
+	FloatLayout:
+		AsyncImage:
+			size_hint: .2, 1
+			pos_hint: {'x': 0, 'y': 0}
+			source: 'img/DefaultPFP.jpg'
+		Label:
+			size_hint: .6, 1
+			pos_hint: {'x': 0.2, 'y': 0}
+			id: title
+			text: 'Game 1'
+			canvas.before:
+				Color:
+					rgba: 0.3, 0.3, 0.3, .8
+				Rectangle:
+					pos: self.pos
+					size: self.size
+		ProgressBar:
+			id: progress
+			max: 1
+			size_hint: .6, .1
+			pos_hint: {'x': 0.2, 'y': 0}
+		Button:
+			size_hint: .2, 1
+			pos_hint: {'x': 0.8, 'y': 0}
+			id: activateButton
+			text: 'install'
+			on_press: self.parent.parent.activate()

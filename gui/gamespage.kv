@@ -1,0 +1,138 @@
+
+
+<GamesPage>:
+	canvas.before:
+		Color:
+			rgba: 0.3, 0.3, 0.3, .8
+		Rectangle:
+			pos: self.pos
+			size: self.size
+	GamesSearch:
+		id: search
+		size_hint: 1, .05
+		pos_hint: {'x': 0, 'top': 1}
+	ContentScrollView:
+		id: contentview
+		size_hint: 1, .95
+		pos_hint: {'x': 0, 'y': 0}
+
+
+<GamesSearch>:
+	TextInput:
+		id: search
+		size_hint: .2, None
+		height: 30
+		pos_hint: {'x': 0, 'top': .9}
+		hint_text: 'Search'
+		halign: 'right'
+	BoxLayout:
+		orientation: 'horizontal'
+		size_hint: .6, None
+		pos_hint: {'x': .2, 'top': .9}
+		height: 30
+		ToggleButton:
+			text: 'Highest Rated'
+			group: 'sortby'
+			state: 'down'
+		ToggleButton:
+			text: 'Most Popular'
+			group: 'sortby'
+		ToggleButton:
+			text: 'Recent'
+			group: 'sortby'
+	Button:
+		id: filter
+		text: 'Filter'
+		size_hint: .15, None
+		height: 30
+		pos_hint: {'right': 1, 'top': .9}
+
+
+<GameCapsule>:
+	canvas.before:
+		Color:
+			rgba: 0.2, 0.2, 0.2, .8
+		Rectangle:
+			pos: self.pos
+			size: self.size
+
+	size: 1024, 512
+	size_hint: 1024, 512
+	size_hint_max: 1024, 512
+
+	FloatLayout:
+		AsyncImage:
+			id:capsuleimage
+			source: 'img/DefaultCapsule.jpg'
+			pos_hint: {'x': 0, 'y': 0}
+			size_hint: 1, 1
+		Label:
+			id: price
+			text: '1.0 USDS'
+			size_hint: 0.3, 0.1
+			pos_hint: {'right': 1, 'y': 0}
+			canvas.before:
+				Color:
+					rgba: 0.2, 0.4, 0.2, .8
+				Rectangle:
+					# self here refers to the widget i.e FloatLayout
+					pos: self.pos
+					size: self.size
+	FloatLayout:
+		Label:
+			id: title
+			font_size: 30
+			text: 'Cool Game'
+			size_hint: 1, .2
+			pos_hint:{'center_x': .5, 'y': .8}
+		Label:
+			id: description
+			text: 'This is a cool game'
+			size_hint: 1, .6
+			pos_hint:{'center_x': .5, 'y': 0.2}
+		Label:
+			id: status
+			text: 'In Development'
+			size_hint: 0.3, 0.05
+			pos_hint: {'right': .9, 'top': 1}
+			canvas.before:
+				Color:
+					rgba: 0.2, 0.5, 0.2, .8
+				Rectangle:
+					# self here refers to the widget i.e FloatLayout
+					pos: self.pos
+					size: self.size
+		Label:
+			id: version
+			text: 'V 0.1'
+			size_hint: 0.1, 0.05
+			pos_hint: {'right': 1, 'top': 1}
+			canvas.before:
+				Color:
+					rgba: 0.1, 0.1, 0.1, .8
+				Rectangle:
+					# self here refers to the widget i.e FloatLayout
+					pos: self.pos
+					size: self.size
+		BoxLayout:
+			size_hint: 1, .2
+			pos_hint:{'center_x': .5, 'y': 0}
+			orientation: 'horizontal'
+			Label:
+				id: rating
+				text: '100% Positive'
+			BoxLayout:
+				padding: 10
+				orientation: 'horizontal'
+				canvas.before:
+					Color:
+						rgba: 0.4, 0.4, 0.4, 1
+					Rectangle:
+						pos: self.pos
+						size: self.size
+				AsyncImage:
+					id: authorpfp
+					source: 'img/DefaultPFP.jpg'
+				Label:
+					id: author
+					text: 'unknown'

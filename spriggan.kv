@@ -1,0 +1,96 @@
+#:include gui/gamespage.kv
+#:include gui/library.kv
+#:include gui/publishpage.kv
+#:include gui/storepage.kv
+
+
+<MainView>:
+
+	SideBar:
+		size_hint: .2, 1
+		pos_hint: {'x': 0, 'y': 0}
+
+	ContentView:
+		size_hint: .8, 1
+		pos_hint: {'x': .2, 'y': 0}
+
+
+<SideBar>:
+	canvas.before:
+		Color:
+			rgba: 0.3, 0.3, 0.3, .8
+		Rectangle:
+			pos: self.pos
+			size: self.size
+	Image:
+		size_hint: 1, .2
+		pos_hint: {'x': 0, 'top': 1}
+		source: 'img/Spriggan.png'
+
+	TabbedPanel:
+		size_hint: 1, .8
+		pos_hint: {'x': 0, 'top': .8}
+		do_default_tab: False
+		TabbedPanelItem:
+			text: 'My Games'
+			FloatLayout:
+				LibraryView:
+					size_hint: 1, 1
+					pos_hint: {'x': 0, 'y': 0}
+
+
+<ContentView>:
+	do_default_tab: False
+	canvas.before:
+		Color:
+			rgba: 0.7, 0.7, 0.7, .8
+		Rectangle:
+			pos: self.pos
+			size: self.size
+	TabbedPanelItem:
+		text: 'Games'
+		GamesPage:
+
+	TabbedPanelItem:
+		text: 'Publish'
+		PublishPage:
+
+
+<ConfirmPopup>:
+	GridLayout:
+		cols: 1
+		pos_hint: {'center': (0.5, 0.5)}
+		size_hint_x: 0.66
+		size_hint_y: None
+		height: self.minimum_height
+
+		canvas:
+			Color:
+				rgba: root.background_color[:3] + [root.background_color[-1] * root._anim_alpha]
+			Rectangle:
+				size: root._window.size if root._window else (0, 0)
+
+			Color:
+				rgb: 1, 1, 1
+			BorderImage:
+				source: root.background
+				border: root.border
+				pos: self.pos
+				size: self.size
+
+		Label:
+			text: root.text
+			size_hint_y: None
+			height: self.texture_size[1]
+			text_size: self.width, None
+			halign: 'center'
+
+		BoxLayout:
+			size_hint_y: None
+
+			Button:
+				text: 'Cancel'
+				on_press: root.cancel()
+			Button:
+				text: 'Ok'
+				on_press: root.ok()
