@@ -2,19 +2,16 @@
 
 
 %PYTHONPATH%\Scripts\\pyinstaller.exe ^
-	-F --windowed --"icon=img/DACT.ico" ^
-	dact.py
+	-F --windowed --"icon=img/SPRIGGAN.ico" ^
+	main.py
 
 cd dist
 
-7z a DACT_v%1.zip *
+7z a SPRIGGAN_v%1.zip *
 
 cd ..
 
-candle.exe dact.wxs
-light.exe dact.wixobj
+del spriggan.wixobj
+del spriggan.wixpdb
 
-del dact.wixobj
-del dact.wixpdb
-
-move dact.msi dist/DACT_v%1.msi
+move spriggan.msi dist/SPRIGGAN_v%1.msi

@@ -40,7 +40,7 @@ class ContentList(GridLayout):
 
 class ConfirmPopup(Popup):
 	__events__ = ('on_ok', 'on_cancel')
-	text = 'sdsd'
+	text = ''
 
 	def ok(self):
 		self.dispatch('on_ok')
@@ -55,7 +55,6 @@ class ConfirmPopup(Popup):
 
 	def on_cancel(self):
 		pass
-
 
 
 class Spriggan(App):

@@ -2,6 +2,7 @@
 #:include gui/library.kv
 #:include gui/publishpage.kv
 #:include gui/storepage.kv
+#:include gui/wallet.kv
 
 
 <MainView>:
@@ -13,6 +14,15 @@
 	ContentView:
 		size_hint: .8, 1
 		pos_hint: {'x': .2, 'y': 0}
+
+	AnchorLayout:
+		anchor_x: 'right'
+		anchor_y: 'top'
+		Wallet:
+			max_size: None, 30
+			height: 30
+			width: 500
+			size_hint: None, None
 
 
 <SideBar>:

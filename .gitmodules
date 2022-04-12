@@ -1,3 +1,6 @@
 [submodule "chia-blockchain"]
 	path = chia-blockchain
 	url = https://github.com/Chia-Network/chia-blockchain.git
+[submodule "libtorrent"]
+	path = libtorrent
+	url = https://github.com/arvidn/libtorrent.git

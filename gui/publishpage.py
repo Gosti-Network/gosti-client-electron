@@ -13,10 +13,13 @@ from main import ConfirmPopup
 from db import DatabaseConnector
 from util import *
 
+from torrents import TorrentHandler
+
 
 class PublishPage(FloatLayout):
 	def __init__(self, **kwargs):
 		super(PublishPage, self).__init__(**kwargs)
+		self.torrenthandler = TorrentHandler()
 		self.games = []
 		Clock.schedule_once(self.load_games, 0)
 
@@ -121,10 +124,18 @@ class GamePublishEdit(BoxLayout):
 		self.ids['executables'].text = str(self.game.executables)
 		self.ids['paymentaddress'].text = self.game.paymentaddress
 
+	def publish_edit(self):
+		if self.editdisabled:
+			pass # start edit
+		else:
+			self.update_game()
 
 	def show_store(self):
 		page = StorePage(self.game)
 		page.open()
+
+	def create_torrent(self):
+		print(TorrentHandler().make_torrent("mygames/coolgame.zip"))
 
 
 class ConfirmPublishPopup(ConfirmPopup):
