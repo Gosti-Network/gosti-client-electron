@@ -25,8 +25,6 @@ class GameCapsule(BoxLayout):
 		self.update_ui(game)
 
 	def update_ui(self, game):
-		self.ids['title'].text = game.title
-		self.ids['description'].text = game.description
 		try:
 			if game.capsuleimage is not '':
 				self.ids['capsuleimage'].source = game.capsuleimage
@@ -35,7 +33,6 @@ class GameCapsule(BoxLayout):
 			pass
 		self.ids['status'].text = game.status
 		self.ids['version'].text = game.version
-		self.ids['author'].text = game.author
 		try:
 			self.ids['price'].text = str(game.prices['USDS']) + ' USDS'
 		except:

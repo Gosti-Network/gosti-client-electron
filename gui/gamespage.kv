@@ -56,9 +56,10 @@
 			pos: self.pos
 			size: self.size
 
-	size: 1024, 512
-	size_hint: 1024, 512
-	size_hint_max: 1024, 512
+	size: 512, 512
+	size_hint: 512, 512
+	size_hint_max: 512, 512
+
 
 	FloatLayout:
 		AsyncImage:
@@ -78,18 +79,6 @@
 					# self here refers to the widget i.e FloatLayout
 					pos: self.pos
 					size: self.size
-	FloatLayout:
-		Label:
-			id: title
-			font_size: 30
-			text: 'Cool Game'
-			size_hint: 1, .2
-			pos_hint:{'center_x': .5, 'y': .8}
-		Label:
-			id: description
-			text: 'This is a cool game'
-			size_hint: 1, .6
-			pos_hint:{'center_x': .5, 'y': 0.2}
 		Label:
 			id: status
 			text: 'In Development'
@@ -114,25 +103,3 @@
 					# self here refers to the widget i.e FloatLayout
 					pos: self.pos
 					size: self.size
-		BoxLayout:
-			size_hint: 1, .2
-			pos_hint:{'center_x': .5, 'y': 0}
-			orientation: 'horizontal'
-			Label:
-				id: rating
-				text: '100% Positive'
-			BoxLayout:
-				padding: 10
-				orientation: 'horizontal'
-				canvas.before:
-					Color:
-						rgba: 0.4, 0.4, 0.4, 1
-					Rectangle:
-						pos: self.pos
-						size: self.size
-				AsyncImage:
-					id: authorpfp
-					source: 'img/DefaultPFP.jpg'
-				Label:
-					id: author
-					text: 'unknown'

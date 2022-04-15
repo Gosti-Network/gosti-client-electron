@@ -4,8 +4,9 @@ class Game():
 
 	def __init__(self, title='', description='', longdescription='', author='',
 				 rating=0, capsuleimage='', trailer='', tags=[], status='Coming Soon',
-				 version='0.1', screenshots=[], prices={'USDS': 0.00},
-				 downloads={'windows': ' '}, executables={'windows': 'game.exe'},
+				 version='0.1', screenshots=[], prices={"USDS": 0.00},
+				 fileslocation={"Windows": "", "Mac": "", "Linux": ""},
+				 executables={"Windows": "", "Mac": "", "Linux": ""},
 				 paymentaddress=''):
 		self.title = title
 		self.description = description
@@ -18,7 +19,7 @@ class Game():
 		self.version = version
 		self.screenshots = screenshots
 		self.prices = prices
-		self.downloads = downloads
+		self.fileslocation = fileslocation
 		self.executables = executables
 		self.paymentaddress = paymentaddress
 

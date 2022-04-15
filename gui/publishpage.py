@@ -1,5 +1,6 @@
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.filechooser import FileChooserListView
 
 from kivy.clock import Clock
 
@@ -14,6 +15,8 @@ from db import DatabaseConnector
 from util import *
 
 from torrents import TorrentHandler
+
+import os
 
 
 class PublishPage(FloatLayout):
@@ -54,6 +57,7 @@ class GamePublishEdit(BoxLayout):
 		self.ids.capsulecontainer.add_widget(self.previewCapsule)
 
 	def publish_edit_update_ui(self, delay=0):
+		print(self.editdisabled)
 		self.ids.title.disabled = self.editdisabled
 		self.ids.description.disabled = self.editdisabled
 		self.ids.longdescription.disabled = self.editdisabled
@@ -65,7 +69,12 @@ class GamePublishEdit(BoxLayout):
 		self.ids.trailer.disabled = self.editdisabled
 		self.ids.screenshots.disabled = self.editdisabled
 		self.ids.prices.disabled = self.editdisabled
-		self.ids.downloads.disabled = self.editdisabled
+		self.ids.fileslocationwindows.disabled = self.editdisabled
+		self.ids.fileslocationmac.disabled = self.editdisabled
+		self.ids.fileslocationlinux.disabled = self.editdisabled
+		self.ids.fileselectbuttonwindows.disabled = self.editdisabled
+		self.ids.fileselectbuttonmac.disabled = self.editdisabled
+		self.ids.fileselectbuttonlinux.disabled = self.editdisabled
 		self.ids.executables.disabled = self.editdisabled
 		self.ids.paymentaddress.disabled = self.editdisabled
 		self.ids.status.disabled = self.editdisabled
@@ -75,6 +84,7 @@ class GamePublishEdit(BoxLayout):
 			self.ids.publishbutton.text = 'Publish'
 
 	def publish_edit(self):
+		print("here")
 		if self.editdisabled:
 			pass # start edit
 		else:
@@ -101,7 +111,9 @@ class GamePublishEdit(BoxLayout):
 		self.game.trailer = self.ids['trailer'].text
 		self.game.screenshots = csv_to_list(self.ids['screenshots'].text)
 		self.game.prices = string_to_object(self.ids['prices'].text)
-		self.game.downloads = string_to_object(self.ids['downloads'].text)
+		self.game.fileslocation = {"Windows": self.ids['fileslocationwindows'].text,
+								   "Mac": self.ids['fileslocationmac'].text,
+								   "Linux": self.ids['fileslocationlinux'].text}
 		self.game.executables = string_to_object(self.ids['executables'].text)
 		self.game.paymentaddress = self.ids['paymentaddress'].text
 		self.previewCapsule.update_ui(self.game)
@@ -120,23 +132,50 @@ class GamePublishEdit(BoxLayout):
 		self.ids['trailer'].text = self.game.trailer
 		self.ids['screenshots'].text = list_to_csv(self.game.screenshots)
 		self.ids['prices'].text = str(self.game.prices)
-		self.ids['downloads'].text = str(self.game.downloads)
+		try:
+			self.ids['fileslocationwindows'].text = str(self.game.fileslocation["Windows"])
+			self.ids['fileslocationmac'].text = str(self.game.fileslocation["Mac"])
+			self.ids['fileslocationlinux'].text = str(self.game.fileslocation["Linux"])
+		except:
+			pass
 		self.ids['executables'].text = str(self.game.executables)
 		self.ids['paymentaddress'].text = self.game.paymentaddress
 
-	def publish_edit(self):
-		if self.editdisabled:
-			pass # start edit
-		else:
-			self.update_game()
 
 	def show_store(self):
 		page = StorePage(self.game)
 		page.open()
 
+	def select_file_location(self, platform):
+		if platform == "Windows":
+			page = SelectFilesPopup(self.ids['fileslocationwindows'])
+		elif platform == "Mac":
+			page = SelectFilesPopup(self.ids['fileslocationmac'])
+		elif platform == "Linux":
+			page = SelectFilesPopup(self.ids['fileslocationlinux'])
+		page.open()
+
 	def create_torrent(self):
 		print(TorrentHandler().make_torrent("mygames/coolgame.zip"))
 
+class SelectFilesPopup(ConfirmPopup):
+	def __init__(self, locationresult):
+		super(SelectFilesPopup, self).__init__()
+		self.locationresult = locationresult
+		self.filechooser = FileChooserListView()
+		self.filechooser.dirselect = True
+		self.filechooser.path = os.getcwd()
+		self.ids['layout'].add_widget(self.filechooser)
+
+	def on_ok(self):
+		try:
+			self.locationresult.text = self.filechooser.selection[0]
+			print(self.filechooser.selection)
+		except:
+			pass
+
+	def on_cancel(self):
+		print("cancel")
 
 class ConfirmPublishPopup(ConfirmPopup):
 	def __init__(self, game):

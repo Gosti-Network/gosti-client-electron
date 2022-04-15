@@ -67,37 +67,14 @@
 
 
 <ConfirmPopup>:
-	GridLayout:
-		cols: 1
-		pos_hint: {'center': (0.5, 0.5)}
-		size_hint_x: 0.66
-		size_hint_y: None
-		height: self.minimum_height
-
-		canvas:
-			Color:
-				rgba: root.background_color[:3] + [root.background_color[-1] * root._anim_alpha]
-			Rectangle:
-				size: root._window.size if root._window else (0, 0)
-
-			Color:
-				rgb: 1, 1, 1
-			BorderImage:
-				source: root.background
-				border: root.border
-				pos: self.pos
-				size: self.size
-
-		Label:
-			text: root.text
-			size_hint_y: None
-			height: self.texture_size[1]
-			text_size: self.width, None
-			halign: 'center'
-
+	FloatLayout:
 		BoxLayout:
-			size_hint_y: None
-
+			id: layout
+			size_hint: 1, .95
+			pos_hint:{'x': 0, 'y': .05}
+		BoxLayout:
+			size_hint: .2, .05
+			pos_hint:{'x': .8, 'y': 0}
 			Button:
 				text: 'Cancel'
 				on_press: root.cancel()

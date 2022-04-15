@@ -44,14 +44,14 @@ class TorrentHandler():
             time.sleep(1)
 
     def load_torrents(self):
-        torrentdir = "mytorrents/"
+        torrentdir = "UserData/Torrents//"
         files = os.listdir(torrentdir)
         print("files: " + str(files))
 
         for file in files:
-            self.add_torrent(torrentdir + file, True)
+            self.add_torrent(torrentdir + file)
 
-    def add_torrent(self, filename, seed_mode):
+    def add_torrent(self, filename):
         params = libtorrent.add_torrent_params()
         if filename.startswith('magnet:'):
             params = libtorrent.parse_magnet_uri(filename)
@@ -59,14 +59,14 @@ class TorrentHandler():
             print("filename: " + filename)
             info = libtorrent.torrent_info(filename)
             print("name:" + info.name())
-            resume_file = os.path.join("mygames/", info.name() + '.fastresume')
+            resume_file = os.path.join("UserData/TorrentData/", info.name() + '.fastresume')
             try:
                 params = libtorrent.read_resume_data(open(resume_file, 'rb').read())
             except Exception as e:
                 print('failed to open resume file "%s": %s' % (resume_file, e))
             params.ti = info
 
-        params.save_path = ".\\mygames"
+        params.save_path = ".\\UserData/TorrentData"
         params.storage_mode = libtorrent.storage_mode_t.storage_mode_sparse
         params.flags |= libtorrent.torrent_flags.duplicate_is_error \
             | libtorrent.torrent_flags.auto_managed \
@@ -91,7 +91,7 @@ class TorrentHandler():
 
         t = libtorrent.create_torrent(fs, 0, 4 * 1024 * 1024)
 
-        # t.add_tracker("udp://tracker.openbittorrent.com:80/announce")
+        t.add_tracker("udp://tracker.openbittorrent.com:80/announce")
         t.add_tracker("http://10.0.0.3:8000/announce")
         t.set_creator('libtorrent (Spriggan) %s' % libtorrent.__version__)
         t.set_comment("my cool file")
@@ -101,12 +101,12 @@ class TorrentHandler():
         sys.stdout.write('\n')
         torrent = t.generate()
         try:
-            os.mkdir("mytorrents")
+            os.mkdir("UserData/Torrents/")
         except:
             pass
-        filename = 'mytorrents/' + os.path.basename(datapath) + '.torrent'
+        filename = 'UserData/Torrents//' + os.path.basename(datapath) + '.torrent'
         f = open(filename, 'wb')
         f.write(libtorrent.bencode(torrent))
         f.close()
 
-        self.add_torrent(filename, True)
+        self.add_torrent(filename)

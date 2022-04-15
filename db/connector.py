@@ -40,7 +40,7 @@ class DatabaseConnector:
 						"SET g.version = $version "
 						"SET g.screenshots = $screenshots "
 						"SET g.prices = $prices "
-						"SET g.downloads = $downloads "
+						"SET g.fileslocation = $fileslocation "
 						"SET g.executables = $executables "
 						"SET g.paymentaddress = $paymentaddress "
 						"RETURN g.title",
@@ -55,7 +55,7 @@ class DatabaseConnector:
 						version=game.version,
 						screenshots=game.screenshots,
 						prices=str(game.prices),
-						downloads=str(game.downloads),
+						fileslocation=str(game.fileslocation),
 						executables=str(game.executables),
 						paymentaddress=game.paymentaddress)
 		return result.single()[0]
@@ -66,7 +66,7 @@ class DatabaseConnector:
 		result = tx.run("MATCH (g:Game) "
 						"RETURN g.title, g.description, g.longdescription, "
 						"g.author, g.capsuleimage, g.trailer, g.tags, g.status, "
-						"g.version, g.screenshots, g.prices, g.downloads, g.executables, g.paymentaddress")
+						"g.version, g.screenshots, g.prices, g.fileslocation, g.executables, g.paymentaddress")
 
 		games = {}
 		for idx, record in enumerate(result):
@@ -81,7 +81,7 @@ class DatabaseConnector:
 							  version=record['g.version'],
 							  screenshots=record['g.screenshots'],
 							  prices=string_to_object(record['g.prices']),
-							  downloads=string_to_object(record['g.downloads']),
+							  fileslocation=string_to_object(record['g.fileslocation']),
 							  executables=string_to_object(record['g.executables']),
 							  paymentaddress=record['g.paymentaddress'])
 		return games
