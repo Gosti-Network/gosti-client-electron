@@ -7,12 +7,11 @@
 		Rectangle:
 			pos: self.pos
 			size: self.size
-	FloatLayout:
+	BoxLayout:
 		size_hint: 1, .1
 		pos_hint: {'x': 0, 'top': 1}
 		Button:
 			size_hint: 1, 1
-			pos_hint: {'x': 0, 'top': .9}
 			text: 'Create New Game'
 			on_press: self.parent.parent.create_game()
 	ContentScrollView:
@@ -42,298 +41,239 @@
 			size: self.size
 
 	size: 1024, 2048
-	size_hint: 1024, 2048
-	size_hint_max: 1024, 2048
-
 	spacing: 10
 
-	FloatLayout:
+	BoxLayout:
 		size_hint: 1, .2
 		id: capsulecontainer
 
-	FloatLayout:
+	BoxLayout:
 		orientation: 'vertical'
 		id: layout
 		spacing: 3
-		FloatLayout:
+		BoxLayout:
 			size_hint: 1, .02
-			pos_hint:{'x': 0, 'y': .75}
 			Label:
 				text: 'Title'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: title
 				on_focus: root.update_game()
 				size_hint: .5, 1
-				pos_hint:{'x': .2, 'y': 0}
 				text_hint: 'My Cool Game'
 			Label:
 				text: 'The title of your game.'
 				size_hint: .3, 1
-				pos_hint:{'x': .7, 'y': 0}
-		FloatLayout:
+		BoxLayout:
 			size_hint: 1, .02
-			pos_hint:{'x': 0, 'y': .73}
 			Label:
 				text: 'Author'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: author
 				on_focus: root.update_game()
 				size_hint: .5, 1
-				pos_hint:{'x': .2, 'y': 0}
 				text_hint: ''
-		FloatLayout:
+			Label:
+				text: ''
+				size_hint: .3, 1
+		BoxLayout:
 			size_hint: 1, .02
-			pos_hint:{'x': 0, 'y': .71}
 			Label:
 				text: 'Current Version'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: version
 				on_focus: root.update_game()
 				size_hint: .5, 1
-				pos_hint:{'x': .2, 'y': 0}
 				text_hint: '0.1'
 			Label:
 				text: 'Must be a valid number.'
 				size_hint: .3, 1
-				pos_hint:{'x': .7, 'y': 0}
-		FloatLayout:
+		BoxLayout:
 			size_hint: 1, .05
-			pos_hint:{'x': 0, 'y': .66}
 			Label:
 				text: 'Description'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: description
 				on_focus: root.update_game()
 				size_hint: .5, 1
-				pos_hint:{'x': .2, 'y': 0}
 				text_hint: 'Short description, is shown in Capsule.'
 			Label:
 				text: 'Short description, is shown in Capsule.'
 				size_hint: .3, 1
-				pos_hint:{'x': .7, 'y': 0}
-		FloatLayout:
+		BoxLayout:
 			size_hint: 1, .15
-			pos_hint:{'x': 0, 'y': .51}
 			Label:
 				text: 'Long Description'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: longdescription
 				on_focus: root.update_game()
 				size_hint: .5, 1
-				pos_hint:{'x': .2, 'y': 0}
 				text_hint: 'Longer description, is shown in store page'
 			Label:
 				text: 'Longer description, is shown in store page'
 				size_hint: .3, 1
-				pos_hint:{'x': .7, 'y': 0}
-		FloatLayout:
+		BoxLayout:
 			size_hint: 1, .02
-			pos_hint:{'x': 0, 'y': .49}
 			Label:
 				text: 'Capsule Image'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: capsuleimage
 				on_focus: root.update_game()
 				size_hint: .5, 1
-				pos_hint:{'x': .2, 'y': 0}
 				text_hint: 'https://i.imgur.com/0001.jpg (512x512 recommended)'
 			Label:
 				text: 'A URL to your capsule image\n(512x512 recommended)'
 				size_hint: .3, 1
-				pos_hint:{'x': .7, 'y': 0}
-		FloatLayout:
+		BoxLayout:
 			size_hint: 1, .02
-			pos_hint:{'x': 0, 'y': .47}
 			Label:
 				text: 'Trailer URL'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: trailer
 				on_focus: root.update_game()
 				size_hint: .5, 1
-				pos_hint:{'x': .2, 'y': 0}
 				text_hint: """https://i.imgur.com/0001.mp4"""
 			Label:
 				text: 'A URL to a video trailer.\n(1920x1080 mp4 recommended)'
 				size_hint: .3, 1
-				pos_hint:{'x': .7, 'y': 0}
-		FloatLayout:
+		BoxLayout:
 			size_hint: 1, .05
-			pos_hint:{'x': 0, 'y': .42}
 			Label:
 				text: 'Screenshots'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: screenshots
 				on_focus: root.update_game()
 				size_hint: .5, 1
-				pos_hint:{'x': .2, 'y': 0}
 				text_hint: """https://i.imgur.com/0001.jpg, https://i.imgur.com/0002.jpg"""
 			Label:
 				text: 'A comma seperated list of URLs.\n(1920x1080 recommended)'
 				size_hint: .3, 1
-				pos_hint:{'x': .7, 'y': 0}
-		FloatLayout:
+		BoxLayout:
 			size_hint: 1, .05
-			pos_hint:{'x': 0, 'y': .37}
 			Label:
 				text: 'Prices'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: prices
 				on_focus: root.update_game()
 				size_hint: .5, 1
-				pos_hint:{'x': .2, 'y': 0}
 				text_hint: """"{'USDS': 5.00}"""
-				Label:
-					text: 'The price is only id USDS for now'
-					size_hint: .3, 1
-					pos_hint:{'x': .7, 'y': 0}
-		FloatLayout:
+			Label:
+				text: 'The price is only id USDS for now'
+				size_hint: .3, 1
+		BoxLayout:
 			size_hint: 1, .05
-			pos_hint:{'x': 0, 'y': .32}
 			Label:
 				text: 'Tags'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: tags
 				on_focus: root.update_game()
 				size_hint: .5, 1
-				pos_hint:{'x': .2, 'y': 0}
 				text_hint: 'single player, action, shooter'
 			Label:
 				text: 'A comma seperated list. Limit: 25\nexample: single player, action, shooter'
 				size_hint: .3, 1
-				pos_hint:{'x': .7, 'y': 0}
-		FloatLayout:
+		BoxLayout:
 			size_hint: 1, .02
-			pos_hint:{'x': 0, 'y': .3}
 			Label:
 				text: 'Game Files (Windows)'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: fileslocationwindows
 				on_focus: root.update_game()
 				size_hint: .4, 1
-				pos_hint:{'x': .2, 'y': 0}
 			Button:
 				id: fileselectbuttonwindows
 				text: "Select"
 				on_press: root.select_file_location("Windows")
 				size_hint: .1, 1
-				pos_hint:{'x': .6, 'y': 0}
 			Label:
 				text: 'The location of the games files'
 				size_hint: .3, 1
-				pos_hint:{'x': .7, 'y': 0}
-		FloatLayout:
+		BoxLayout:
 			size_hint: 1, .02
-			pos_hint:{'x': 0, 'y': .28}
 			Label:
 				text: 'Game Files (Mac)'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: fileslocationmac
 				on_focus: root.update_game()
 				size_hint: .4, 1
-				pos_hint:{'x': .2, 'y': 0}
 			Button:
 				id: fileselectbuttonmac
 				text: "Select"
 				on_press: root.select_file_location("Mac")
 				size_hint: .1, 1
-				pos_hint:{'x': .6, 'y': 0}
 			Label:
 				text: 'The location of the games files'
 				size_hint: .3, 1
-				pos_hint:{'x': .7, 'y': 0}
-		FloatLayout:
+		BoxLayout:
 			size_hint: 1, .02
-			pos_hint:{'x': 0, 'y': .26}
 			Label:
 				text: 'Game Files (Linux)'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: fileslocationlinux
 				on_focus: root.update_game()
 				size_hint: .4, 1
-				pos_hint:{'x': .2, 'y': 0}
 			Button:
 				id: fileselectbuttonlinux
 				text: "Select"
 				on_press: root.select_file_location("Linux")
 				size_hint: .1, 1
-				pos_hint:{'x': .6, 'y': 0}
 			Label:
 				text: 'The location of the games files'
 				size_hint: .3, 1
-				pos_hint:{'x': .7, 'y': 0}
-		FloatLayout:
+		BoxLayout:
 			size_hint: 1, .05
-			pos_hint:{'x': 0, 'y': .21}
 			Label:
 				text: 'Executables'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: executables
 				on_focus: root.update_game()
 				size_hint: .5, 1
-				pos_hint:{'x': .2, 'y': 0}
 				text_hint: """"{'windows': 'game.exe'}"""
 			Label:
 				text: 'The paths to the executables\nfor each platform'
 				size_hint: .3, 1
-				pos_hint:{'x': .7, 'y': 0}
-		FloatLayout:
+		BoxLayout:
 			size_hint: 1, .02
-			pos_hint:{'x': 0, 'y': .19}
 			Label:
 				text: 'Payment Address'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			TextInput:
 				id: paymentaddress
 				on_focus: root.update_game()
 				size_hint: .5, 1
-				pos_hint:{'x': .2, 'y': 0}
 				text_hint: 'xch00000000000000000000000000000000000000000000000000000000000'
-		FloatLayout:
-			size_hint: 1, .05
-			pos_hint:{'x': 0, 'y': .14}
+			Label:
+				text: ''
+				size_hint: .3, 1
+		BoxLayout:
+			size_hint: 1, .02
 			Label:
 				text: 'Development Status'
 				size_hint: .2, 1
-				pos_hint:{'x': 0, 'y': 0}
 			Spinner:
 				id: status
 				on_press: root.update_game()
 				size_hint: .5, 1
-				pos_hint:{'x': .2, 'y': 0}
 				values: 'Coming Soon', 'In Development', 'Complete'
+			Label:
+				text: ''
+				size_hint: .3, 1
 
 		BoxLayout:
-			size_hint: 1, .05
-			pos_hint:{'x': 0, 'y': 0}
+			size_hint: 1, .02
 			Button:
 				id: previewbutton
 				text: "Preview Store Page"
@@ -348,5 +288,5 @@
 				on_press: root.publish_edit()
 			Button:
 				id: torrentbutton
-				text: "torrent"
+				text: "Generate Torrents"
 				on_press: root.create_torrent()

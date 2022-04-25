@@ -8,12 +8,13 @@ from threading import Thread
 class Singleton(type):
     _instances = {}
     def __call__(cls, *args, **kwargs):
+        print("ccccccc")
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
 
-class TorrentHandler():
+class TorrentHandler(metaclass=Singleton):
 
     def __init__(self):
         self.session = libtorrent.session({'listen_interfaces': '0.0.0.0:6881',
@@ -28,23 +29,26 @@ class TorrentHandler():
     def seeder(self):
         self.load_torrents()
         while (True):
-            for torrent in self.session.get_torrents():
-                s = torrent.status()
+            try:
+                for torrent in self.session.get_torrents():
+                    s = torrent.status()
 
-                print('\r%s - %.2f%% complete (down: %.1f kB/s up: %.1f kB/s peers: %d) %s' % (
-                    s.name, s.progress * 100, s.download_rate / 1000, s.upload_rate / 1000,
-                    s.num_peers, s.state), end=' ')
-                print("")
+                    print('\r%s - %.2f%% complete (down: %.1f kB/s up: %.1f kB/s peers: %d) %s' % (
+                        s.name, s.progress * 100, s.download_rate / 1000, s.upload_rate / 1000,
+                        s.num_peers, s.state), end=' ')
+                    print("")
 
-                alerts = self.session.pop_alerts()
-                for a in alerts:
-                    if a.category() & libtorrent.alert.category_t.error_notification:
-                        print("error: " + str(a))
+                    alerts = self.session.pop_alerts()
+                    for a in alerts:
+                        if a.category() & libtorrent.alert.category_t.error_notification:
+                            print("error: " + str(a))
 
-            time.sleep(1)
+                    time.sleep(1)
+            except:
+                self.load_torrents()
 
     def load_torrents(self):
-        torrentdir = "UserData/Torrents//"
+        torrentdir = "UserData/Torrents/"
         files = os.listdir(torrentdir)
         print("files: " + str(files))
 
@@ -81,12 +85,6 @@ class TorrentHandler():
 
         parent_input = os.path.split(input)[0]
 
-        print("input: " + input)
-        # if os.path.isfile(input):
-        #     size = os.path.getsize(input)
-        #     fs.add_file(input, size)
-        #     print("input: " + input + " size: " + str(size))
-
         libtorrent.add_files(fs, input)
 
         t = libtorrent.create_torrent(fs, 0, 4 * 1024 * 1024)
@@ -104,7 +102,7 @@ class TorrentHandler():
             os.mkdir("UserData/Torrents/")
         except:
             pass
-        filename = 'UserData/Torrents//' + os.path.basename(datapath) + '.torrent'
+        filename = 'UserData/Torrents/' + os.path.basename(datapath) + '.torrent'
         f = open(filename, 'wb')
         f.write(libtorrent.bencode(torrent))
         f.close()

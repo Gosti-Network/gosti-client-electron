@@ -156,7 +156,7 @@ class GamePublishEdit(BoxLayout):
 		page.open()
 
 	def create_torrent(self):
-		print(TorrentHandler().make_torrent("mygames/coolgame.zip"))
+		print(TorrentHandler().make_torrent(self.ids['fileslocationwindows'].text))
 
 class SelectFilesPopup(ConfirmPopup):
 	def __init__(self, locationresult):
@@ -169,7 +169,7 @@ class SelectFilesPopup(ConfirmPopup):
 
 	def on_ok(self):
 		try:
-			self.locationresult.text = self.filechooser.selection[0]
+			self.locationresult.text = os.path.relpath(self.filechooser.selection[0])
 			print(self.filechooser.selection)
 		except:
 			pass

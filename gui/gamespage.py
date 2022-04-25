@@ -26,7 +26,7 @@ class GameCapsule(BoxLayout):
 
 	def update_ui(self, game):
 		try:
-			if game.capsuleimage is not '':
+			if game.capsuleimage != '':
 				self.ids['capsuleimage'].source = game.capsuleimage
 			self.ids['capsuleimage'].reload()
 		except:

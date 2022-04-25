@@ -56,50 +56,47 @@
 			pos: self.pos
 			size: self.size
 
-	size: 512, 512
-	size_hint: 512, 512
+	size: 256,256
+	size_hint_min: 256, 256
 	size_hint_max: 512, 512
-
 
 	FloatLayout:
 		AsyncImage:
+			size_hint: 1, 1
+			pos_hint: {'x': 0, 'y': 0}
 			id:capsuleimage
 			source: 'img/DefaultCapsule.jpg'
-			pos_hint: {'x': 0, 'y': 0}
-			size_hint: 1, 1
 		Label:
+			size_hint: 0.2, .15
+			pos_hint: {'x': .8, 'y': 0}
 			id: price
 			text: '1.0 USDS'
-			size_hint: 0.3, 0.1
-			pos_hint: {'right': 1, 'y': 0}
 			canvas.before:
 				Color:
 					rgba: 0.2, 0.4, 0.2, .8
 				Rectangle:
-					# self here refers to the widget i.e FloatLayout
 					pos: self.pos
 					size: self.size
-		Label:
-			id: status
-			text: 'In Development'
-			size_hint: 0.3, 0.05
-			pos_hint: {'right': .9, 'top': 1}
-			canvas.before:
-				Color:
-					rgba: 0.2, 0.5, 0.2, .8
-				Rectangle:
-					# self here refers to the widget i.e FloatLayout
-					pos: self.pos
-					size: self.size
-		Label:
-			id: version
-			text: 'V 0.1'
-			size_hint: 0.1, 0.05
-			pos_hint: {'right': 1, 'top': 1}
-			canvas.before:
-				Color:
-					rgba: 0.1, 0.1, 0.1, .8
-				Rectangle:
-					# self here refers to the widget i.e FloatLayout
-					pos: self.pos
-					size: self.size
+		BoxLayout:
+			size_hint: 0.4, .1
+			pos_hint: {'x': .6, 'y': .9}
+			Label:
+				id: status
+				text: 'In Development'
+				size_hint: 0.8, 1
+				canvas.before:
+					Color:
+						rgba: 0.2, 0.5, 0.2, .8
+					Rectangle:
+						pos: self.pos
+						size: self.size
+			Label:
+				id: version
+				text: 'V 0.1'
+				size_hint: .2, 1
+				canvas.before:
+					Color:
+						rgba: 0.1, 0.1, 0.1, .8
+					Rectangle:
+						pos: self.pos
+						size: self.size
