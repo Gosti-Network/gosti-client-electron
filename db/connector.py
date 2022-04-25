@@ -2,6 +2,7 @@ from neo4j import GraphDatabase
 
 from data import Game
 from util import *
+from base64 import b64encode, b64decode
 
 class DatabaseConnector:
 
@@ -41,6 +42,7 @@ class DatabaseConnector:
 						"SET g.screenshots = $screenshots "
 						"SET g.prices = $prices "
 						"SET g.fileslocation = $fileslocation "
+						"SET g.torrents = $torrents "
 						"SET g.executables = $executables "
 						"SET g.paymentaddress = $paymentaddress "
 						"RETURN g.title",
@@ -56,6 +58,7 @@ class DatabaseConnector:
 						screenshots=game.screenshots,
 						prices=str(game.prices),
 						fileslocation=str(game.fileslocation),
+						torrents=str(game.torrents),
 						executables=str(game.executables),
 						paymentaddress=game.paymentaddress)
 		return result.single()[0]
@@ -66,7 +69,7 @@ class DatabaseConnector:
 		result = tx.run("MATCH (g:Game) "
 						"RETURN g.title, g.description, g.longdescription, "
 						"g.author, g.capsuleimage, g.trailer, g.tags, g.status, "
-						"g.version, g.screenshots, g.prices, g.fileslocation, g.executables, g.paymentaddress")
+						"g.version, g.screenshots, g.prices, g.fileslocation, g.torrents, g.executables, g.paymentaddress")
 
 		games = {}
 		for idx, record in enumerate(result):
@@ -82,6 +85,7 @@ class DatabaseConnector:
 							  screenshots=record['g.screenshots'],
 							  prices=string_to_object(record['g.prices']),
 							  fileslocation=string_to_object(record['g.fileslocation']),
+							  torrents=string_to_object(record['g.torrents']),
 							  executables=string_to_object(record['g.executables']),
 							  paymentaddress=record['g.paymentaddress'])
 		return games

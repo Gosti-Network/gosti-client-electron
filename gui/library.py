@@ -10,7 +10,11 @@ from threading import Thread
 from zipfile import ZipFile
 from packaging import version
 
+from sys import platform
+
 from db import DatabaseConnector
+
+from torrents import TorrentHandler
 
 LIBRARY_PATH = './Library'
 
@@ -85,31 +89,23 @@ class LibraryGame(BoxLayout):
 	def activate(self):
 		self.check_install_state()
 		if self.installstate == NOT_INSTALLED or self.installstate == PENDING_UPDATE:
-			self.downloadthreads.append(Thread(target=self._install).start())
+			self.update_torrent()
 		elif self.installstate == UP_TO_DATE:
 			try:
 				os.startfile(os.getcwd() + LIBRARY_PATH + '/' + self.game.get_filename() + '/' + self.game.executables['windows'])
 			except Exception as e:
 				print(e)
 
-	def _install(self):
-		existingfiles = glob.glob(LIBRARY_PATH + '/' + self.game.title + '*')
-		for file in existingfiles:
-			shutil.rmtree(file, ignore_errors=True)
-		url = self.game.downloads['windows']
-		local_filename = LIBRARY_PATH + '/' + self.game.get_filename()
-		with requests.get(url, stream=True) as r:
-			r.raise_for_status()
-			with open(local_filename + '.zip', 'wb') as f:
-				self.update_install_state(UPDATING)
-				total_length = r.headers.get('content-length')
-				written = 0
-
-				for chunk in r.iter_content(chunk_size=16384):
-					f.write(chunk)
-					written += len(chunk)
-					self.ids.progress.value = written / int(total_length)
-		with ZipFile(local_filename + '.zip', 'r') as zip:
-			zip.extractall(local_filename)
-		os.remove(local_filename + '.zip')
-		self.update_install_state(UP_TO_DATE)
+	def update_torrent(self):
+		print("platform: " + platform)
+		if platform == "linux" or platform == "linux2":
+			pass
+		elif platform == "darwin":
+			pass
+		elif platform == "win32":
+			if self.game.torrents['Windows'] != "":
+				torrent_name = "UserData/Torrents/" + self.game.title + "-v-" + self.game.version + ".torrent"
+				f = open(torrent_name, "wb")
+				f.write(self.game.torrents['Windows'])
+				f.close()
+				TorrentHandler().add_torrent(torrent_name)

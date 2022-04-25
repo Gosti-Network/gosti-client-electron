@@ -92,7 +92,6 @@ class TorrentHandler(metaclass=Singleton):
         t.add_tracker("udp://tracker.openbittorrent.com:80/announce")
         t.add_tracker("http://10.0.0.3:8000/announce")
         t.set_creator('libtorrent (Spriggan) %s' % libtorrent.__version__)
-        t.set_comment("my cool file")
         t.name = os.path.basename(datapath)
 
         libtorrent.set_piece_hashes(t, parent_input, lambda x: sys.stdout.write('.'))
@@ -103,8 +102,10 @@ class TorrentHandler(metaclass=Singleton):
         except:
             pass
         filename = 'UserData/Torrents/' + os.path.basename(datapath) + '.torrent'
+        torrent_code = libtorrent.bencode(torrent)
         f = open(filename, 'wb')
-        f.write(libtorrent.bencode(torrent))
+        f.write(torrent_code)
         f.close()
 
         self.add_torrent(filename)
+        return torrent_code

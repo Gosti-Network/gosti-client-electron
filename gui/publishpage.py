@@ -114,6 +114,9 @@ class GamePublishEdit(BoxLayout):
 		self.game.fileslocation = {"Windows": self.ids['fileslocationwindows'].text,
 								   "Mac": self.ids['fileslocationmac'].text,
 								   "Linux": self.ids['fileslocationlinux'].text}
+		self.game.torrents = {"Windows": self.create_torrent(self.ids['fileslocationwindows'].text),
+							  "Mac": self.create_torrent(self.ids['fileslocationmac'].text),
+							  "Linux": self.create_torrent(self.ids['fileslocationlinux'].text)}
 		self.game.executables = string_to_object(self.ids['executables'].text)
 		self.game.paymentaddress = self.ids['paymentaddress'].text
 		self.previewCapsule.update_ui(self.game)
@@ -155,8 +158,12 @@ class GamePublishEdit(BoxLayout):
 			page = SelectFilesPopup(self.ids['fileslocationlinux'])
 		page.open()
 
-	def create_torrent(self):
-		print(TorrentHandler().make_torrent(self.ids['fileslocationwindows'].text))
+	def create_torrent(self, fileslocation):
+		if os.path.exists(fileslocation):
+			tor = TorrentHandler().make_torrent(fileslocation)
+			return tor
+		else:
+			return ""
 
 class SelectFilesPopup(ConfirmPopup):
 	def __init__(self, locationresult):

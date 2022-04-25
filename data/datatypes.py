@@ -6,6 +6,7 @@ class Game():
 				 rating=0, capsuleimage='', trailer='', tags=[], status='Coming Soon',
 				 version='0.1', screenshots=[], prices={"USDS": 0.00},
 				 fileslocation={"Windows": "", "Mac": "", "Linux": ""},
+				 torrents={"Windows": "", "Mac": "", "Linux": ""},
 				 executables={"Windows": "", "Mac": "", "Linux": ""},
 				 paymentaddress=''):
 		self.title = title
@@ -20,6 +21,7 @@ class Game():
 		self.screenshots = screenshots
 		self.prices = prices
 		self.fileslocation = fileslocation
+		self.torrents = torrents
 		self.executables = executables
 		self.paymentaddress = paymentaddress
 
