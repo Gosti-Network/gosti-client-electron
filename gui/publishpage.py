@@ -17,17 +17,19 @@ from util import *
 from torrents import TorrentHandler
 
 import os
+import shutil
 
 
 class PublishPage(FloatLayout):
 	def __init__(self, **kwargs):
+		self.color_bg = COLOR_BG_DARK
 		super(PublishPage, self).__init__(**kwargs)
 		self.torrenthandler = TorrentHandler()
 		self.games = []
 		Clock.schedule_once(self.load_games, 0)
 
 	def load_games(self, time):
-		con = DatabaseConnector("bolt://10.0.0.3:7687", "Gaerax", "password")
+		con = DatabaseConnector()
 		self.games = con.get_games()
 		con.close()
 		for game in self.games:
@@ -39,6 +41,7 @@ class PublishPage(FloatLayout):
 
 class GamePublishEdit(BoxLayout):
 	def __init__(self, game=None):
+		self.color_bg = COLOR_BG_MAIN
 		super(GamePublishEdit, self).__init__(size_hint=(1, None))
 		self.orientation = "vertical"
 		if game is None:
@@ -57,13 +60,14 @@ class GamePublishEdit(BoxLayout):
 		self.ids.capsulecontainer.add_widget(self.previewCapsule)
 
 	def publish_edit_update_ui(self, delay=0):
-		print(self.editdisabled)
+		print("Enable ui: " + str(self.editdisabled))
 		self.ids.title.disabled = self.editdisabled
 		self.ids.description.disabled = self.editdisabled
 		self.ids.longdescription.disabled = self.editdisabled
 		self.ids.author.disabled = self.editdisabled
 		# self.ids.author.disabled = True # Author name shouldn't be changed, because they will lose access
 		self.ids.capsuleimage.disabled = self.editdisabled
+		self.ids.icon.disabled = self.editdisabled
 		self.ids.tags.disabled = self.editdisabled
 		self.ids.version.disabled = self.editdisabled
 		self.ids.trailer.disabled = self.editdisabled
@@ -84,13 +88,13 @@ class GamePublishEdit(BoxLayout):
 			self.ids.publishbutton.text = 'Publish'
 
 	def publish_edit(self):
-		print("here")
 		if self.editdisabled:
 			pass # start edit
 		else:
 			self.update_game()
+			self.update_torrents()
 			self.old_game = self.game
-			con = DatabaseConnector("bolt://10.0.0.3:7687", "Gaerax", "password")
+			con = DatabaseConnector()
 			con.publish_game(self.game)
 			con.close()
 			# warning = ConfirmPublishPopup(self.game)
@@ -105,22 +109,59 @@ class GamePublishEdit(BoxLayout):
 		self.game.longdescription = self.ids['longdescription'].text
 		self.game.author = self.ids['author'].text
 		self.game.capsuleimage = self.ids['capsuleimage'].text
+		self.game.icon = self.ids['icon'].text
 		self.game.tags = csv_to_list(self.ids['tags'].text)
 		self.game.status = self.ids['status'].text
 		self.game.version = self.ids['version'].text
 		self.game.trailer = self.ids['trailer'].text
 		self.game.screenshots = csv_to_list(self.ids['screenshots'].text)
 		self.game.prices = string_to_object(self.ids['prices'].text)
-		self.game.fileslocation = {"Windows": self.ids['fileslocationwindows'].text,
-								   "Mac": self.ids['fileslocationmac'].text,
-								   "Linux": self.ids['fileslocationlinux'].text}
-		self.game.torrents = {"Windows": self.create_torrent(self.ids['fileslocationwindows'].text),
-							  "Mac": self.create_torrent(self.ids['fileslocationmac'].text),
-							  "Linux": self.create_torrent(self.ids['fileslocationlinux'].text)}
 		self.game.executables = string_to_object(self.ids['executables'].text)
 		self.game.paymentaddress = self.ids['paymentaddress'].text
 		self.previewCapsule.update_ui(self.game)
 
+	def update_torrents(self, delay=0):
+		print("updating torrents")
+		try:
+			selected = self.ids['fileslocationwindows'].text
+			desired_name = self.game.get_filename() + "-Windows.zip"
+			if os.path.samefile(os.path.split(selected)[0], TORRENT_DATA_PATH):
+				os.rename(selected, desired_name)
+			else:
+				shutil.copyfile(selected, TORRENT_DATA_PATH + desired_name)
+			self.ids['fileslocationwindows'].text = TORRENT_DATA_PATH + desired_name
+			windows_torrent = self.create_torrent(self.ids['fileslocationwindows'].text)
+		except:
+			windows_torrent = self.game.torrents["Windows"]
+			print("Windows torrent was duplicate")
+		try:
+			selected = self.ids['fileslocationmac'].text
+			desired_name = self.game.get_filename() + "-Mac.zip"
+			if os.path.samefile(os.path.split(selected)[0], TORRENT_DATA_PATH):
+				os.rename(selected, desired_name)
+			else:
+				shutil.copyfile(selected, TORRENT_DATA_PATH + desired_name)
+			self.ids['fileslocationmac'].text = TORRENT_DATA_PATH + desired_name
+			mac_torrent = self.create_torrent(self.ids['fileslocationmac'].text)
+		except:
+			mac_torrent = self.game.torrents["Mac"]
+			print("Mac torrent was duplicate")
+		try:
+			selected = self.ids['fileslocationlinux'].text
+			desired_name = self.game.get_filename() + "-Linux.zip"
+			if os.path.samefile(os.path.split(selected)[0], TORRENT_DATA_PATH):
+				os.rename(selected, desired_name)
+			else:
+				shutil.copyfile(selected, TORRENT_DATA_PATH + desired_name)
+			self.ids['fileslocationlinux'].text = TORRENT_DATA_PATH + desired_name
+			linux_torrent = self.create_torrent(self.ids['fileslocationlinux'].text)
+		except:
+			linux_torrent = self.game.torrents["Linux"]
+			print("Linux torrent was duplicate")
+
+		self.game.torrents = {"Windows": windows_torrent,
+							  "Mac": mac_torrent,
+							  "Linux": linux_torrent}
 
 	def revert(self):
 		self.game = self.old_game
@@ -129,6 +170,7 @@ class GamePublishEdit(BoxLayout):
 		self.ids['longdescription'].text = self.game.longdescription
 		self.ids['author'].text = self.game.author
 		self.ids['capsuleimage'].text = self.game.capsuleimage
+		self.ids['icon'].text = self.game.icon
 		self.ids['tags'].text = list_to_csv(self.game.tags)
 		self.ids['status'].text = self.game.status
 		self.ids['version'].text = self.game.version
@@ -171,18 +213,18 @@ class SelectFilesPopup(ConfirmPopup):
 		self.locationresult = locationresult
 		self.filechooser = FileChooserListView()
 		self.filechooser.dirselect = True
-		self.filechooser.path = os.getcwd()
+		self.filechooser.path = os.getcwd() + TORRENT_DATA_PATH
 		self.ids['layout'].add_widget(self.filechooser)
 
 	def on_ok(self):
 		try:
-			self.locationresult.text = os.path.relpath(self.filechooser.selection[0])
-			print(self.filechooser.selection)
+			self.locationresult.text = self.filechooser.selection[0]
+			print("file selected: " + self.filechooser.selection)
 		except:
 			pass
 
 	def on_cancel(self):
-		print("cancel")
+		print("cancel file select")
 
 class ConfirmPublishPopup(ConfirmPopup):
 	def __init__(self, game):
@@ -190,7 +232,7 @@ class ConfirmPublishPopup(ConfirmPopup):
 		self.game = game
 
 	def on_ok(self):
-		con = DatabaseConnector("bolt://10.0.0.3:7687", "Gaerax", "password")
+		con = DatabaseConnector()
 		con.publish_game(self.game)
 		con.close()
 

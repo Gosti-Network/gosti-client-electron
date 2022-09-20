@@ -1,9 +1,9 @@
-
+#:import util util
 
 <PublishPage>:
 	canvas.before:
 		Color:
-			rgba: 0.3, 0.3, 0.3, .8
+			rgba: util.COLOR_BG_DARK
 		Rectangle:
 			pos: self.pos
 			size: self.size
@@ -11,9 +11,11 @@
 		size_hint: 1, .1
 		pos_hint: {'x': 0, 'top': 1}
 		Button:
+			background_color: util.COLOR_THEME_DARK
+			color: util.COLOR_THEME_LIGHT
 			size_hint: 1, 1
 			text: 'Create New Game'
-			on_press: self.parent.parent.create_game()
+			on_press: root.create_game()
 	ContentScrollView:
 		id: contentview
 		size_hint: 1, .9
@@ -26,21 +28,21 @@
 
 
 <ContentList>:
-	cols: 1
+	cols: 3
 	size_hint: 1, None
-	padding: 30
-	spacing: 50
+	padding: 20
+	spacing: 30
 
 
 <GamePublishEdit>:
 	canvas.before:
 		Color:
-			rgba: 0.2, 0.2, 0.2, .8
+			rgba: util.COLOR_BG_MAIN
 		Rectangle:
 			pos: self.pos
 			size: self.size
 
-	size: 1024, 2048
+	size: 1024, 2200
 	spacing: 10
 
 	BoxLayout:
@@ -54,239 +56,357 @@
 		BoxLayout:
 			size_hint: 1, .02
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Title'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: title
 				on_focus: root.update_game()
 				size_hint: .5, 1
 				text_hint: 'My Cool Game'
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'The title of your game.'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .02
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Author'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: author
 				on_focus: root.update_game()
 				size_hint: .5, 1
 				text_hint: ''
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: ''
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .02
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Current Version'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: version
 				on_focus: root.update_game()
 				size_hint: .5, 1
 				text_hint: '0.1'
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Must be a valid number.'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .05
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Description'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: description
 				on_focus: root.update_game()
 				size_hint: .5, 1
 				text_hint: 'Short description, is shown in Capsule.'
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Short description, is shown in Capsule.'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .15
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Long Description'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: longdescription
 				on_focus: root.update_game()
 				size_hint: .5, 1
 				text_hint: 'Longer description, is shown in store page'
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Longer description, is shown in store page'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .02
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Capsule Image'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: capsuleimage
 				on_focus: root.update_game()
 				size_hint: .5, 1
 				text_hint: 'https://i.imgur.com/0001.jpg (512x512 recommended)'
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'A URL to your capsule image\n(512x512 recommended)'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .02
 			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Icon'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: icon
+				on_focus: root.update_game()
+				size_hint: .5, 1
+				text_hint: 'https://i.imgur.com/0001.png (64x64 recommended)'
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'A URL to your Icon\n(64x64 recommended)'
+				size_hint: .3, 1
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Trailer URL'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: trailer
 				on_focus: root.update_game()
 				size_hint: .5, 1
 				text_hint: """https://i.imgur.com/0001.mp4"""
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'A URL to a video trailer.\n(1920x1080 mp4 recommended)'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .05
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Screenshots'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: screenshots
 				on_focus: root.update_game()
 				size_hint: .5, 1
 				text_hint: """https://i.imgur.com/0001.jpg, https://i.imgur.com/0002.jpg"""
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'A comma seperated list of URLs.\n(1920x1080 recommended)'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .05
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Prices'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: prices
 				on_focus: root.update_game()
 				size_hint: .5, 1
 				text_hint: """"{'USDS': 5.00}"""
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'The price is only id USDS for now'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .05
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Tags'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: tags
 				on_focus: root.update_game()
 				size_hint: .5, 1
 				text_hint: 'single player, action, shooter'
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'A comma seperated list. Limit: 25\nexample: single player, action, shooter'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .02
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Game Files (Windows)'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: fileslocationwindows
-				on_focus: root.update_game()
 				size_hint: .4, 1
 			Button:
+				background_color: util.COLOR_THEME_DARK
+				color: util.COLOR_THEME_LIGHT
 				id: fileselectbuttonwindows
 				text: "Select"
 				on_press: root.select_file_location("Windows")
 				size_hint: .1, 1
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'The location of the games files'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .02
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Game Files (Mac)'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: fileslocationmac
-				on_focus: root.update_game()
 				size_hint: .4, 1
 			Button:
+				background_color: util.COLOR_THEME_DARK
+				color: util.COLOR_THEME_LIGHT
 				id: fileselectbuttonmac
 				text: "Select"
 				on_press: root.select_file_location("Mac")
 				size_hint: .1, 1
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'The location of the games files'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .02
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Game Files (Linux)'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: fileslocationlinux
-				on_focus: root.update_game()
 				size_hint: .4, 1
 			Button:
+				background_color: util.COLOR_THEME_DARK
+				color: util.COLOR_THEME_LIGHT
 				id: fileselectbuttonlinux
 				text: "Select"
 				on_press: root.select_file_location("Linux")
 				size_hint: .1, 1
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'The location of the games files'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .05
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Executables'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: executables
 				on_focus: root.update_game()
 				size_hint: .5, 1
 				text_hint: """"{'windows': 'game.exe'}"""
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'The paths to the executables\nfor each platform'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .02
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Payment Address'
 				size_hint: .2, 1
 			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
 				id: paymentaddress
 				on_focus: root.update_game()
 				size_hint: .5, 1
 				text_hint: 'xch00000000000000000000000000000000000000000000000000000000000'
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: ''
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .02
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Development Status'
 				size_hint: .2, 1
 			Spinner:
+				background_color: util.COLOR_THEME_DARK
+				color: util.COLOR_THEME_LIGHT
 				id: status
 				on_press: root.update_game()
 				size_hint: .5, 1
 				values: 'Coming Soon', 'In Development', 'Complete'
 			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: ''
 				size_hint: .3, 1
 
 		BoxLayout:
 			size_hint: 1, .02
 			Button:
+				background_color: util.COLOR_THEME_DARK
+				color: util.COLOR_THEME_LIGHT
 				id: previewbutton
 				text: "Preview Store Page"
 				on_press: root.show_store()
 			Button:
+				background_color: util.COLOR_THEME_DARK
+				color: util.COLOR_THEME_LIGHT
 				id: revertbutton
 				text: "Revert"
 				on_press: root.revert()
 			Button:
+				background_color: util.COLOR_THEME_DARK
+				color: util.COLOR_THEME_LIGHT
 				id: publishbutton
 				text: "Publish"
 				on_press: root.publish_edit()
-			Button:
-				id: torrentbutton
-				text: "Generate Torrents"
-				on_press: root.create_torrent()

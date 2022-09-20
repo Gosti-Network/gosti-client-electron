@@ -1,5 +1,12 @@
+#:import util util
 
 <LibraryView>:
+	canvas.before:
+		Color:
+			rgba: util.COLOR_BG_MAIN
+		Rectangle:
+			pos: self.pos
+			size: self.size
 	do_scroll_x: False
 	do_scroll_y: True
 
@@ -11,30 +18,36 @@
 
 <LibraryGame>:
 	height: 40
-	FloatLayout:
+	BoxLayout:
 		AsyncImage:
 			size_hint: .2, 1
-			pos_hint: {'x': 0, 'y': 0}
-			source: 'img/DefaultPFP.jpg'
-		Label:
+			id: icon
+		BoxLayout:
 			size_hint: .6, 1
-			pos_hint: {'x': 0.2, 'y': 0}
-			id: title
-			text: 'Game 1'
+			orientation: 'vertical'
 			canvas.before:
 				Color:
-					rgba: 0.3, 0.3, 0.3, .8
+					rgba: util.COLOR_BG_DARK
 				Rectangle:
 					pos: self.pos
 					size: self.size
-		ProgressBar:
-			id: progress
-			max: 1
-			size_hint: .6, .1
-			pos_hint: {'x': 0.2, 'y': 0}
+			BoxLayout:
+				size_hint: 1, .9
+				Label:
+					size_hint: .7, 1
+					id: title
+					text: 'Game 1'
+				Image:
+					size_hint: .2, .7
+					source: 'img/SeedIcon.png'
+			ProgressBar:
+				id: progress
+				max: 1
+				size_hint: 1, .1
+
 		Button:
+			background_color: util.COLOR_THEME_DARK
+			color: util.COLOR_THEME_LIGHT
 			size_hint: .2, 1
-			pos_hint: {'x': 0.8, 'y': 0}
 			id: activateButton
-			text: 'install'
-			on_press: self.parent.parent.activate()
+			on_press: root.activate()

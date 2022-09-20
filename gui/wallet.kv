@@ -1,13 +1,10 @@
+#:import util util
 
 <Wallet>:
 
 	Button:
-		canvas.before:
-			Color:
-				rgba: 0.7, 0.7, 0.7, 1
-			Rectangle:
-				pos: self.pos
-				size: self.size
+		background_color: util.COLOR_THEME_DARK
+		color: util.COLOR_THEME_LIGHT
 		id: walletbutton
 		text: 'Wallet'
 		on_press: root.show_wallet()
@@ -16,7 +13,7 @@
 <WalletDropDown>:
 	canvas.before:
 		Color:
-			rgba: 0.3, 0.3, 0.3, 1
+			rgba: util.COLOR_BG_LIGHT
 		Rectangle:
 			pos: self.pos
 			size: self.size
@@ -32,6 +29,7 @@
 		size_hint_y: None
 		height: 600
 
+
 <BalanceBox>:
 	Label:
 		id:name
@@ -45,6 +43,7 @@
 		halign: 'right'
 		size_hint: .6, 1
 		pos_hint:{'x': .4, 'y': 0}
+
 
 <AddressBox>
 	Label:

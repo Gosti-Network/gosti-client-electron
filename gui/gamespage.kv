@@ -1,9 +1,9 @@
-
+#:import util util
 
 <GamesPage>:
 	canvas.before:
 		Color:
-			rgba: 0.3, 0.3, 0.3, .8
+			rgba: util.COLOR_BG_DARK
 		Rectangle:
 			pos: self.pos
 			size: self.size
@@ -19,6 +19,9 @@
 
 <GamesSearch>:
 	TextInput:
+		background_color: util.COLOR_BG_LIGHT
+		foreground_color: util.COLOR_THEME_MAIN
+		cursor_color: util.COLOR_THEME_MAIN
 		id: search
 		size_hint: .2, None
 		height: 30
@@ -31,16 +34,24 @@
 		pos_hint: {'x': .2, 'top': .9}
 		height: 30
 		ToggleButton:
+			background_color: util.COLOR_THEME_DARK
+			color: util.COLOR_THEME_LIGHT
 			text: 'Highest Rated'
 			group: 'sortby'
 			state: 'down'
 		ToggleButton:
+			background_color: util.COLOR_THEME_DARK
+			color: util.COLOR_THEME_LIGHT
 			text: 'Most Popular'
 			group: 'sortby'
 		ToggleButton:
+			background_color: util.COLOR_THEME_DARK
+			color: util.COLOR_THEME_LIGHT
 			text: 'Recent'
 			group: 'sortby'
 	Button:
+		background_color: util.COLOR_THEME_DARK
+		color: util.COLOR_THEME_LIGHT
 		id: filter
 		text: 'Filter'
 		size_hint: .15, None
@@ -51,14 +62,13 @@
 <GameCapsule>:
 	canvas.before:
 		Color:
-			rgba: 0.2, 0.2, 0.2, .8
+			rgba: util.COLOR_BG_MAIN
 		Rectangle:
 			pos: self.pos
 			size: self.size
 
-	size: 256,256
-	size_hint_min: 256, 256
-	size_hint_max: 512, 512
+	size: 350, 350
+	size_hint_max: 350, 350
 
 	FloatLayout:
 		AsyncImage:
@@ -73,7 +83,7 @@
 			text: '1.0 USDS'
 			canvas.before:
 				Color:
-					rgba: 0.2, 0.4, 0.2, .8
+					rgba: util.COLOR_PRICE
 				Rectangle:
 					pos: self.pos
 					size: self.size
@@ -81,22 +91,24 @@
 			size_hint: 0.4, .1
 			pos_hint: {'x': .6, 'y': .9}
 			Label:
+				color: util.COLOR_THEME_DARK
 				id: status
 				text: 'In Development'
 				size_hint: 0.8, 1
 				canvas.before:
 					Color:
-						rgba: 0.2, 0.5, 0.2, .8
+						rgba: root.color_dev_status
 					Rectangle:
 						pos: self.pos
 						size: self.size
 			Label:
+				color: util.COLOR_THEME_DARK
 				id: version
 				text: 'V 0.1'
 				size_hint: .2, 1
 				canvas.before:
 					Color:
-						rgba: 0.1, 0.1, 0.1, .8
+						rgba: util.COLOR_VERSION
 					Rectangle:
 						pos: self.pos
 						size: self.size

@@ -5,13 +5,7 @@ import os
 import time
 from threading import Thread
 
-class Singleton(type):
-    _instances = {}
-    def __call__(cls, *args, **kwargs):
-        print("ccccccc")
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
+from util import *
 
 
 class TorrentHandler(metaclass=Singleton):
@@ -22,38 +16,46 @@ class TorrentHandler(metaclass=Singleton):
         self.session.start_dht()
 
         print("starting torrent handler")
+        self.update_ui_callback = None
         self.seeder_daemon = Thread(target=self.seeder)
         self.seeder_daemon.daemon = True
         self.seeder_daemon.start()
+
+    def set_update_ui_callback(self, callback):
+        self.update_ui_callback = callback
 
     def seeder(self):
         self.load_torrents()
         while (True):
             try:
+                statuses = {}
                 for torrent in self.session.get_torrents():
                     s = torrent.status()
+                    statuses[s.name] = s
 
-                    print('\r%s - %.2f%% complete (down: %.1f kB/s up: %.1f kB/s peers: %d) %s' % (
-                        s.name, s.progress * 100, s.download_rate / 1000, s.upload_rate / 1000,
-                        s.num_peers, s.state), end=' ')
-                    print("")
 
-                    alerts = self.session.pop_alerts()
-                    for a in alerts:
-                        if a.category() & libtorrent.alert.category_t.error_notification:
-                            print("error: " + str(a))
-
-                    time.sleep(1)
+                alerts = self.session.pop_alerts()
+                for a in alerts:
+                    if a.category() & libtorrent.alert.category_t.error_notification:
+                        print("error: " + str(a))
+                if self.update_ui_callback is not None:
+                    self.update_ui_callback(statuses)
+                time.sleep(UI_UPDATE_FREQUENCY)
             except:
                 self.load_torrents()
 
+    def get_status(self, file):
+        for torrent in self.session.get_torrents():
+            status = torrent.status()
+            if status.name == file:
+                return status
+
     def load_torrents(self):
-        torrentdir = "UserData/Torrents/"
-        files = os.listdir(torrentdir)
+        files = os.listdir(TORRENTS_PATH)
         print("files: " + str(files))
 
         for file in files:
-            self.add_torrent(torrentdir + file)
+            self.add_torrent(TORRENTS_PATH + file)
 
     def add_torrent(self, filename):
         params = libtorrent.add_torrent_params()
@@ -63,14 +65,14 @@ class TorrentHandler(metaclass=Singleton):
             print("filename: " + filename)
             info = libtorrent.torrent_info(filename)
             print("name:" + info.name())
-            resume_file = os.path.join("UserData/TorrentData/", info.name() + '.fastresume')
+            resume_file = os.path.join(TORRENT_DATA_PATH, info.name() + '.fastresume')
             try:
                 params = libtorrent.read_resume_data(open(resume_file, 'rb').read())
             except Exception as e:
                 print('failed to open resume file "%s": %s' % (resume_file, e))
             params.ti = info
 
-        params.save_path = ".\\UserData/TorrentData"
+        params.save_path = TORRENT_DATA_PATH
         params.storage_mode = libtorrent.storage_mode_t.storage_mode_sparse
         params.flags |= libtorrent.torrent_flags.duplicate_is_error \
             | libtorrent.torrent_flags.auto_managed \
@@ -90,7 +92,7 @@ class TorrentHandler(metaclass=Singleton):
         t = libtorrent.create_torrent(fs, 0, 4 * 1024 * 1024)
 
         t.add_tracker("udp://tracker.openbittorrent.com:80/announce")
-        t.add_tracker("http://10.0.0.3:8000/announce")
+        t.add_tracker("http://10.0.0.9:8000/announce")
         t.set_creator('libtorrent (Spriggan) %s' % libtorrent.__version__)
         t.name = os.path.basename(datapath)
 
@@ -98,10 +100,10 @@ class TorrentHandler(metaclass=Singleton):
         sys.stdout.write('\n')
         torrent = t.generate()
         try:
-            os.mkdir("UserData/Torrents/")
+            os.mkdir(TORRENTS_PATH)
         except:
             pass
-        filename = 'UserData/Torrents/' + os.path.basename(datapath) + '.torrent'
+        filename = TORRENTS_PATH + os.path.basename(datapath) + '.torrent'
         torrent_code = libtorrent.bencode(torrent)
         f = open(filename, 'wb')
         f.write(torrent_code)

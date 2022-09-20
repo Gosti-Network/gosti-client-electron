@@ -1,10 +1,12 @@
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.stacklayout import StackLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.popup import Popup
 from kivy.core.window import Window
+from kivy import resources
 
 from data import Game
 from db import DatabaseConnector
@@ -33,9 +35,8 @@ class ContentScrollView(ScrollView):
 		self.add_widget(self.content)
 
 
-class ContentList(GridLayout):
-	def __init__(self, **kwargs):
-		super(ContentList, self).__init__(**kwargs)
+class ContentList(StackLayout):
+	pass
 
 
 class ConfirmPopup(Popup):
@@ -60,7 +61,7 @@ class ConfirmPopup(Popup):
 class Spriggan(App):
 	def build(self):
 		Window.size = (1400, 800)
-		Window.minimum_width = 1300
+		Window.minimum_width = 1000
 		Window.minimum_height = 600
 		return MainView()
 

@@ -4,9 +4,12 @@ from data import Game
 from util import *
 from base64 import b64encode, b64decode
 
-class DatabaseConnector:
 
-	def __init__(self, uri, user, password):
+class DatabaseConnector(metaclass=Singleton):
+	def __init__(self):
+		uri = "bolt://10.0.0.9:7687"
+		user = "Gaerax"
+		password = "password"
 		self.driver = GraphDatabase.driver(uri, auth=(user, password))
 
 	def close(self):
@@ -14,7 +17,7 @@ class DatabaseConnector:
 
 	def publish_game(self, game):
 		with self.driver.session() as session:
-			title = session.write_transaction(self._publish_game, game)
+			title = session.write_transaction(self.__publish_game, game)
 
 	def update_game(self, title, game):
 		with self.driver.session() as session:
@@ -22,11 +25,11 @@ class DatabaseConnector:
 
 	def get_games(self):
 		with self.driver.session() as session:
-			games = session.write_transaction(self._get_games)
+			games = session.write_transaction(self.__get_games)
 			return games
 
 	@staticmethod
-	def _publish_game(tx, game):
+	def __publish_game(tx, game):
 		print("Attempting Update")
 		result = tx.run("Merge (g:Game {title: $title}) "
 						"ON MATCH "
@@ -35,13 +38,13 @@ class DatabaseConnector:
 						"SET g.longdescription = $longdescription "
 						"SET g.author = $author "
 						"SET g.capsuleimage = $capsuleimage "
+						"SET g.icon = $icon "
 						"SET g.trailer = $trailer "
 						"SET g.tags = $tags "
 						"SET g.status = $status "
 						"SET g.version = $version "
 						"SET g.screenshots = $screenshots "
 						"SET g.prices = $prices "
-						"SET g.fileslocation = $fileslocation "
 						"SET g.torrents = $torrents "
 						"SET g.executables = $executables "
 						"SET g.paymentaddress = $paymentaddress "
@@ -51,13 +54,13 @@ class DatabaseConnector:
 						longdescription=game.longdescription,
 						author=game.author,
 						capsuleimage=game.capsuleimage,
+						icon=game.icon,
 						trailer=game.trailer,
 						tags=game.tags,
 						status=game.status,
 						version=game.version,
 						screenshots=game.screenshots,
 						prices=str(game.prices),
-						fileslocation=str(game.fileslocation),
 						torrents=str(game.torrents),
 						executables=str(game.executables),
 						paymentaddress=game.paymentaddress)
@@ -65,11 +68,11 @@ class DatabaseConnector:
 
 
 	@staticmethod
-	def _get_games(tx):
+	def __get_games(tx):
 		result = tx.run("MATCH (g:Game) "
 						"RETURN g.title, g.description, g.longdescription, "
-						"g.author, g.capsuleimage, g.trailer, g.tags, g.status, "
-						"g.version, g.screenshots, g.prices, g.fileslocation, g.torrents, g.executables, g.paymentaddress")
+						"g.author, g.capsuleimage, g.icon, g.trailer, g.tags, g.status, "
+						"g.version, g.screenshots, g.prices, g.torrents, g.executables, g.paymentaddress")
 
 		games = {}
 		for idx, record in enumerate(result):
@@ -78,13 +81,13 @@ class DatabaseConnector:
 							  longdescription=record['g.longdescription'],
 							  author=record['g.author'],
 							  capsuleimage=record['g.capsuleimage'],
+							  icon=record['g.icon'],
 							  trailer=record['g.trailer'],
 							  tags=record['g.tags'],
 							  status=record['g.status'],
 							  version=record['g.version'],
 							  screenshots=record['g.screenshots'],
 							  prices=string_to_object(record['g.prices']),
-							  fileslocation=string_to_object(record['g.fileslocation']),
 							  torrents=string_to_object(record['g.torrents']),
 							  executables=string_to_object(record['g.executables']),
 							  paymentaddress=record['g.paymentaddress'])
@@ -92,7 +95,7 @@ class DatabaseConnector:
 
 
 	@staticmethod
-	def _create_user(tx, user):
+	def __create_user(tx, user):
 		result = tx.run("CREATE (g:User) "
 						"SET g.username = $username "
 						"SET g.profilepicture = $profilepicture "
@@ -104,7 +107,7 @@ class DatabaseConnector:
 		return result.single()[0]
 
 	@staticmethod
-	def _update_user(tx, username, user):
+	def __update_user(tx, username, user):
 		result = tx.run("MATCH (u:User {username: $oldUsername}) "
 						"SET u.username = $username "
 						"SET u.profilepicture = $profilepicture "
@@ -117,7 +120,7 @@ class DatabaseConnector:
 		return result.single()[0]
 
 	@staticmethod
-	def _get_users(tx):
+	def __get_users(tx):
 		result = tx.run("MATCH (u:User) "
 						"RETURN u.username, u.profilepicture, u.recieveaddress")
 
@@ -129,7 +132,7 @@ class DatabaseConnector:
 		return games
 
 	@staticmethod
-	def _get_user(tx, username):
+	def __get_user(tx, username):
 		result = tx.run("MATCH (u:User {username: $username}) "
 						"RETURN u.username, u.profilepicture, u.recieveaddress")
 

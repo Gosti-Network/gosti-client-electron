@@ -3,6 +3,10 @@ from kivy.uix.floatlayout import FloatLayout
 
 from kivy.clock import Clock
 
+from kivy.graphics import Color
+
+from util import *
+
 from db import DatabaseConnector
 
 
@@ -13,7 +17,7 @@ class GamesPage(FloatLayout):
 		Clock.schedule_once(self.load_games, 0)
 
 	def load_games(self, time):
-		con = DatabaseConnector("bolt://10.0.0.3:7687", "Gaerax", "password")
+		con = DatabaseConnector()
 		self.games = con.get_games()
 		for game in self.games:
 			self.ids.contentview.content.add_widget(GameCapsule(self.games[game]))
@@ -21,6 +25,7 @@ class GamesPage(FloatLayout):
 
 class GameCapsule(BoxLayout):
 	def __init__(self, game):
+		self.color_dev_status = get_status_color(game.status)
 		super(GameCapsule, self).__init__(size_hint=(1, None))
 		self.update_ui(game)
 
