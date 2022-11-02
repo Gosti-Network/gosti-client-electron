@@ -13,9 +13,29 @@
 		Button:
 			background_color: util.COLOR_THEME_DARK
 			color: util.COLOR_THEME_LIGHT
-			size_hint: 1, 1
+			size_hint: .25, 1
 			text: 'Create New Game'
 			on_press: root.create_game()
+		Button:
+			background_color: util.COLOR_THEME_DARK
+			color: util.COLOR_THEME_LIGHT
+			size_hint: .25, 1
+			text: 'Create New Datastore'
+			on_press: root.create_datastore()
+		BoxLayout:
+			size_hint: .5, 1
+			pos_hint: {'x': 0, 'top': 1}
+			orientation: 'vertical'
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Datastore ID'
+				size_hint: 1, .5
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: '*********Datastore ID *********'
+				id: datastoreidlabel
+				size_hint: 1, .5
+
 	ContentScrollView:
 		id: contentview
 		size_hint: 1, .9
@@ -53,6 +73,23 @@
 		orientation: 'vertical'
 		id: layout
 		spacing: 3
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Product ID'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: productid
+				size_hint: .5, 1
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Unique product identfier'
+				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .02
 			Label:
@@ -223,25 +260,6 @@
 			Label:
 				color: util.COLOR_THEME_LIGHT
 				text: 'A comma seperated list of URLs.\n(1920x1080 recommended)'
-				size_hint: .3, 1
-		BoxLayout:
-			size_hint: 1, .05
-			Label:
-				color: util.COLOR_THEME_LIGHT
-				text: 'Prices'
-				size_hint: .2, 1
-			TextInput:
-				background_color: util.COLOR_BG_LIGHT
-				foreground_color: util.COLOR_THEME_MAIN
-				disabled_foreground_color: util.COLOR_THEME_LIGHT
-				cursor_color: util.COLOR_THEME_MAIN
-				id: prices
-				on_focus: root.update_game()
-				size_hint: .5, 1
-				text_hint: """"{'USDS': 5.00}"""
-			Label:
-				color: util.COLOR_THEME_LIGHT
-				text: 'The price is only id USDS for now'
 				size_hint: .3, 1
 		BoxLayout:
 			size_hint: 1, .05

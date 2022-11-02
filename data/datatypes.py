@@ -1,5 +1,7 @@
 
 from sys import platform
+import uuid
+import libtorrent
 
 class Dev_Status:
 	COMING_SOON = "Coming Soon"
@@ -8,30 +10,43 @@ class Dev_Status:
 
 class Game():
 
-	def __init__(self, title='', description='', longdescription='', author='',
-				 rating=0, capsuleimage='', icon='', trailer='', tags=[], status='Coming Soon',
-				 version='0.1', screenshots=[], prices={"USDS": 0.00},
+	def __init__(self, productid='', title='', description='', longdescription='', author='',
+				 contentrating='', capsuleimage='', icon='', trailer='', tags=[], status='Coming Soon',
+				 version='0.1', screenshots=[],
 				 torrents={"Windows": "", "Mac": "", "Linux": ""},
 				 executables={"Windows": "", "Mac": "", "Linux": ""},
 				 paymentaddress=''):
-		self.title = title
-		self.description = description
-		self.longdescription = longdescription
-		self.author = author
-		self.capsuleimage = capsuleimage
-		self.icon = icon
-		self.trailer = trailer
-		self.tags = tags
-		self.status = status
-		self.version = version
-		self.screenshots = screenshots
-		self.prices = prices
-		self.torrents = torrents
-		self.executables = executables
-		self.paymentaddress = paymentaddress
+		if productid == '':
+			productid = str(uuid.uuid4())
+		self.info = {
+			"productid": productid,
+			"title": title,
+			"description": description,
+			"longdescription": longdescription,
+			"author": author,
+			"contentrating": contentrating,
+			"capsuleimage": capsuleimage,
+			"icon": icon,
+			"trailer": trailer,
+			"tags": tags,
+			"status": status,
+			"version": version,
+			"screenshots": screenshots,
+			"torrents": torrents,
+			"executables": executables,
+			"paymentaddress": paymentaddress,
+		}
+
+	def from_json(info):
+		g = Game()
+		g.info = info
+		if "productid" not in g.info:
+			g.info["productid"] = str(uuid.uuid4())
+		return g
+
 
 	def get_filename(self):
-		return self.title + '-v-' + self.version
+		return self.info["title"] + '-v-' + self.info["version"]
 
 	def get_torrent_data_filename(self):
 		p = ""
@@ -53,7 +68,11 @@ class Game():
 		elif platform == "win32":
 			p = "Windows"
 
-		return self.torrents[p]
+		return libtorrent.bencode(self.info["torrents"][p])
+
+	def set_torrents(self, torrents):
+		for p in torrents.keys():
+			self.info["torrents"][p] = torrents[p]
 
 	def get_executable(self):
 		p = ""
@@ -64,7 +83,7 @@ class Game():
 		elif platform == "win32":
 			p = "Windows"
 
-		return self.executables[p]
+		return self.info["executables"][p]
 
 
 class User():

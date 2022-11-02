@@ -17,7 +17,8 @@ from zipfile import ZipFile
 from packaging import version
 
 from util import *
-from db import DatabaseConnector
+from datalayer import DataLayerConnector
+from chia.util.byte_types import hexstr_to_bytes
 
 from torrents import TorrentHandler
 
@@ -45,29 +46,28 @@ class LibraryView(ScrollView):
 class LibraryList(GridLayout):
 	def __init__(self, **kwargs):
 		super(LibraryList, self).__init__(**kwargs)
-		con = DatabaseConnector()
-		self.games = con.get_games()
-		con.close()
+		con = DataLayerConnector()
+		self.games = []
 		for game in self.games:
-			self.add_widget(LibraryGame(self.games[game]))
+			self.add_widget(LibraryGame(game))
 
 
 class LibraryGame(BoxLayout):
 	def __init__(self, game):
 		super(LibraryGame, self).__init__(size_hint=(1, None))
 		self.game = game
-		self.ids['title'].text = self.game.title
-		self.ids['icon'].source = self.game.icon
+		self.ids['title'].text = self.game.info["title"]
+		self.ids['icon'].source = self.game.info["icon"]
 		self.downloadthreads = []
 		self.installstate = NOT_DOWNLOADED
 		self.auto_install = True
 		self.check_install_state()
 
 	def check_install_state(self):
-		installs = glob.glob(INSTALL_PATH + '/' + self.game.title + '*')
+		installs = glob.glob(INSTALL_PATH + '/' + self.game.info["title"] + '*')
 		if len(installs) > 0:
 			self.installstate = INSTALLED
-			if (version.parse(installs[0].split('-v-')[-1]) < version.parse(self.game.version)):
+			if (version.parse(installs[0].split('-v-')[-1]) < version.parse(self.game.info["version"])):
 				self.installstate = PENDING_UPDATE
 
 		status = TorrentHandler().get_status(self.game.get_torrent_data_filename())

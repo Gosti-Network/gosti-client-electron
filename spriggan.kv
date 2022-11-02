@@ -1,6 +1,7 @@
 #:include gui/gamespage.kv
 #:include gui/library.kv
 #:include gui/publishpage.kv
+#:include gui/mintingpage.kv
 #:include gui/storepage.kv
 #:include gui/wallet.kv
 
@@ -13,10 +14,6 @@
 		size_hint: .2, 1
 		pos_hint: {'x': 0, 'y': 0}
 
-	ContentView:
-		size_hint: .8, 1
-		pos_hint: {'x': .2, 'y': 0}
-
 	AnchorLayout:
 		anchor_x: 'right'
 		anchor_y: 'top'
@@ -24,6 +21,18 @@
 			max_size: None, 30
 			height: 30
 			width: 500
+			size_hint: None, None
+
+	AnchorLayout:
+		anchor_x: 'left'
+		anchor_y: 'bottom'
+		Button:
+			text: 'Settings'
+			id: settingsbutton
+			on_press: root.open_settings()
+			max_size: 50, 50
+			height: 50
+			width: 50
 			size_hint: None, None
 
 
@@ -52,8 +61,21 @@
 					size_hint: 1, 1
 					pos_hint: {'x': 0, 'y': 0}
 
+<ContentViewNormal>:
+	do_default_tab: False
+	canvas.before:
+		Color:
+			rgba: util.COLOR_BG_DARK
+		Rectangle:
+			pos: self.pos
+			size: self.size
+	TabbedPanelItem:
+		background_color: util.COLOR_THEME_LIGHT
+		color: util.COLOR_THEME_MAIN
+		text: 'Games'
+		GamesPage:
 
-<ContentView>:
+<ContentViewPublisher>:
 	do_default_tab: False
 	canvas.before:
 		Color:
@@ -72,6 +94,12 @@
 		color: util.COLOR_THEME_MAIN
 		text: 'Publish'
 		PublishPage:
+
+	TabbedPanelItem:
+		background_color: util.COLOR_THEME_LIGHT
+		color: util.COLOR_THEME_MAIN
+		text: 'Minting'
+		MintingPage:
 
 
 <ConfirmPopup>:

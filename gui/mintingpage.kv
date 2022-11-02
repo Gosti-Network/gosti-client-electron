@@ -1,0 +1,161 @@
+#:import util util
+
+<MintingPage>:
+	canvas.before:
+		Color:
+			rgba: util.COLOR_BG_DARK
+		Rectangle:
+			pos: self.pos
+			size: self.size
+
+	ContentScrollView:
+		id: contentview
+		size_hint: 1, .9
+		pos_hint: {'x': 0, 'y': 0}
+
+
+<ContentScrollView>:
+	do_scroll_x: False
+	do_scroll_y: True
+
+
+<ContentList>:
+	cols: 3
+	size_hint: 1, None
+	padding: 20
+	spacing: 30
+
+
+<GameMintingPanel>:
+	canvas.before:
+		Color:
+			rgba: util.COLOR_BG_MAIN
+		Rectangle:
+			pos: self.pos
+			size: self.size
+
+	size: 1024, 512
+	spacing: 10
+
+	BoxLayout:
+		size_hint: 1, .2
+		id: productview
+
+	BoxLayout:
+		orientation: 'vertical'
+		id: layout
+		spacing: 3
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Image URI'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: data_uri
+				size_hint: .8, 1
+				text_hint: ''
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Metadata URI'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: metadata_uri
+				size_hint: .8, 1
+				text_hint: ''
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'License URI'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: license_uri
+				size_hint: .8, 1
+				text_hint: ''
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Fee'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: fee_amount
+				size_hint: .8, 1
+				text_hint: ''
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Royalty %'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: royalty_percentage
+				size_hint: .8, 1
+				text_hint: '60'
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Royalty Address'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: royalty_address
+				size_hint: .8, 1
+				text_hint: ''
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Quantity'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: mint_quantity
+				size_hint: .8, 1
+				text_hint: '100'
+
+
+		BoxLayout:
+			size_hint: 1, .02
+			Button:
+				background_color: util.COLOR_THEME_DARK
+				color: util.COLOR_THEME_LIGHT
+				id: previewbutton
+				text: "Generate Spend Bundles"
+				on_press: root.create_mint_spend_bundles()
+			Button:
+				background_color: util.COLOR_THEME_DARK
+				color: util.COLOR_THEME_LIGHT
+				id: revertbutton
+				text: "Submit Spend Bundles"
+				on_press: root.submit_spend_bundles()

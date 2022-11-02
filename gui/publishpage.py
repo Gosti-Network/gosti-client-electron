@@ -1,6 +1,7 @@
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.filechooser import FileChooserListView
+from kivy.config import ConfigParser
 
 from kivy.clock import Clock
 
@@ -11,10 +12,12 @@ from data import Game
 
 from main import ConfirmPopup
 
-from db import DatabaseConnector
+from datalayer import DataLayerConnector
 from util import *
+from base64 import b64encode, b64decode
 
 from torrents import TorrentHandler
+from chia.types.blockchain_format.sized_bytes import bytes32
 
 import os
 import shutil
@@ -29,14 +32,33 @@ class PublishPage(FloatLayout):
 		Clock.schedule_once(self.load_games, 0)
 
 	def load_games(self, time):
-		con = DatabaseConnector()
-		self.games = con.get_games()
-		con.close()
+
+		self.games = []
+		self.ids.contentview.content.clear_widgets()
+		config = ConfigParser()
+		config.read('config.ini')
+		self.ids.datastoreidlabel.text = config.get("publishing", "datastore_id")
+
+		con = DataLayerConnector()
+		self.games = con.get_published_games()
 		for game in self.games:
-			self.ids.contentview.content.add_widget(GamePublishEdit(self.games[game]))
+			self.ids.contentview.content.add_widget(GamePublishEdit(game))
 
 	def create_game(self):
+		con = DataLayerConnector()
+		id = con.get_datastore_id()
 		self.ids.contentview.content.add_widget(GamePublishEdit())
+
+	def create_datastore(self):
+		config = ConfigParser()
+		config.read('config.ini')
+		con = DataLayerConnector()
+		store = con.create_datastore()
+		print(store)
+		config.set("publishing", "datastore_id", store["id"])
+		config.write()
+		self.ids.datastoreidlabel.text = store["id"]
+		self.load_games(0)
 
 
 class GamePublishEdit(BoxLayout):
@@ -61,18 +83,17 @@ class GamePublishEdit(BoxLayout):
 
 	def publish_edit_update_ui(self, delay=0):
 		print("Enable ui: " + str(self.editdisabled))
+		self.ids.productid.disabled = self.editdisabled
 		self.ids.title.disabled = self.editdisabled
 		self.ids.description.disabled = self.editdisabled
 		self.ids.longdescription.disabled = self.editdisabled
 		self.ids.author.disabled = self.editdisabled
-		# self.ids.author.disabled = True # Author name shouldn't be changed, because they will lose access
 		self.ids.capsuleimage.disabled = self.editdisabled
 		self.ids.icon.disabled = self.editdisabled
 		self.ids.tags.disabled = self.editdisabled
 		self.ids.version.disabled = self.editdisabled
 		self.ids.trailer.disabled = self.editdisabled
 		self.ids.screenshots.disabled = self.editdisabled
-		self.ids.prices.disabled = self.editdisabled
 		self.ids.fileslocationwindows.disabled = self.editdisabled
 		self.ids.fileslocationmac.disabled = self.editdisabled
 		self.ids.fileslocationlinux.disabled = self.editdisabled
@@ -94,9 +115,8 @@ class GamePublishEdit(BoxLayout):
 			self.update_game()
 			self.update_torrents()
 			self.old_game = self.game
-			con = DatabaseConnector()
+			con = DataLayerConnector()
 			con.publish_game(self.game)
-			con.close()
 			# warning = ConfirmPublishPopup(self.game)
 			# warning.open()
 
@@ -104,87 +124,99 @@ class GamePublishEdit(BoxLayout):
 		self.publish_edit_update_ui()
 
 	def update_game(self, delay=0):
-		self.game.title = self.ids['title'].text
-		self.game.description = self.ids['description'].text
-		self.game.longdescription = self.ids['longdescription'].text
-		self.game.author = self.ids['author'].text
-		self.game.capsuleimage = self.ids['capsuleimage'].text
-		self.game.icon = self.ids['icon'].text
-		self.game.tags = csv_to_list(self.ids['tags'].text)
-		self.game.status = self.ids['status'].text
-		self.game.version = self.ids['version'].text
-		self.game.trailer = self.ids['trailer'].text
-		self.game.screenshots = csv_to_list(self.ids['screenshots'].text)
-		self.game.prices = string_to_object(self.ids['prices'].text)
-		self.game.executables = string_to_object(self.ids['executables'].text)
-		self.game.paymentaddress = self.ids['paymentaddress'].text
+		self.game.info["productid"] = self.ids['productid'].text
+		self.game.info["title"] = self.ids['title'].text
+		self.game.info["description"] = self.ids['description'].text
+		self.game.info["longdescription"] = self.ids['longdescription'].text
+		self.game.info["author"] = self.ids['author'].text
+		self.game.info["capsuleimage"] = self.ids['capsuleimage'].text
+		self.game.info["icon"] = self.ids['icon'].text
+		self.game.info["tags"] = csv_to_list(self.ids['tags'].text)
+		self.game.info["status"] = self.ids['status'].text
+		self.game.info["version"] = self.ids['version'].text
+		self.game.info["trailer"] = self.ids['trailer'].text
+		self.game.info["screenshots"] = csv_to_list(self.ids['screenshots'].text)
+		self.game.info["executables"] = string_to_object(self.ids['executables'].text)
+		self.game.info["paymentaddress"] = self.ids['paymentaddress'].text
 		self.previewCapsule.update_ui(self.game)
 
 	def update_torrents(self, delay=0):
+		config = ConfigParser()
+		config.read('config.ini')
+		data_path = config["files"]["torrents_data_path"]
 		print("updating torrents")
+		# try:
+		selected = self.ids['fileslocationwindows'].text
+		desired_name = self.game.get_filename() + "-Windows"
+
 		try:
-			selected = self.ids['fileslocationwindows'].text
-			desired_name = self.game.get_filename() + "-Windows.zip"
-			if os.path.samefile(os.path.split(selected)[0], TORRENT_DATA_PATH):
-				os.rename(selected, desired_name)
-			else:
-				shutil.copyfile(selected, TORRENT_DATA_PATH + desired_name)
-			self.ids['fileslocationwindows'].text = TORRENT_DATA_PATH + desired_name
-			windows_torrent = self.create_torrent(self.ids['fileslocationwindows'].text)
-		except:
-			windows_torrent = self.game.torrents["Windows"]
-			print("Windows torrent was duplicate")
+			shutil.make_archive(data_path + "/" + desired_name, 'zip', selected)
+		except Exception as e:
+			print(f"update_torrents: {e}")
+			return
+
+		self.ids['fileslocationwindows'].text = data_path + "/" + desired_name + ".zip"
+		windows_torrent = self.create_torrent(self.ids['fileslocationwindows'].text)
+		# except Exception as e:
+		# 	print(e)
+		# 	windows_torrent = self.game.info["torrents"]["Windows"]
+		# 	print("Windows torrent was duplicate")
 		try:
 			selected = self.ids['fileslocationmac'].text
 			desired_name = self.game.get_filename() + "-Mac.zip"
-			if os.path.samefile(os.path.split(selected)[0], TORRENT_DATA_PATH):
+			if os.path.samefile(os.path.split(selected)[0], data_path):
 				os.rename(selected, desired_name)
 			else:
-				shutil.copyfile(selected, TORRENT_DATA_PATH + desired_name)
-			self.ids['fileslocationmac'].text = TORRENT_DATA_PATH + desired_name
+				shutil.copyfile(selected, data_path + desired_name)
+			self.ids['fileslocationmac'].text = data_path + "/" + desired_name
 			mac_torrent = self.create_torrent(self.ids['fileslocationmac'].text)
-		except:
-			mac_torrent = self.game.torrents["Mac"]
+		except Exception as e:
+			print(e)
+			mac_torrent = self.game.info["torrents"]["Mac"]
 			print("Mac torrent was duplicate")
 		try:
 			selected = self.ids['fileslocationlinux'].text
 			desired_name = self.game.get_filename() + "-Linux.zip"
-			if os.path.samefile(os.path.split(selected)[0], TORRENT_DATA_PATH):
+			if os.path.samefile(os.path.split(selected)[0], data_path):
 				os.rename(selected, desired_name)
 			else:
-				shutil.copyfile(selected, TORRENT_DATA_PATH + desired_name)
-			self.ids['fileslocationlinux'].text = TORRENT_DATA_PATH + desired_name
+				shutil.copyfile(selected, data_path + desired_name)
+			self.ids['fileslocationlinux'].text = data_path + "/" + desired_name
 			linux_torrent = self.create_torrent(self.ids['fileslocationlinux'].text)
-		except:
-			linux_torrent = self.game.torrents["Linux"]
+		except Exception as e:
+			print(e)
+			linux_torrent = self.game.info["torrents"]["Linux"]
 			print("Linux torrent was duplicate")
 
-		self.game.torrents = {"Windows": windows_torrent,
-							  "Mac": mac_torrent,
-							  "Linux": linux_torrent}
+		self.game.set_torrents({
+			"Windows": windows_torrent,
+			"Mac": mac_torrent,
+			"Linux": linux_torrent
+		})
 
 	def revert(self):
+		print(self.game.info)
 		self.game = self.old_game
-		self.ids['title'].text = self.game.title
-		self.ids['description'].text = self.game.description
-		self.ids['longdescription'].text = self.game.longdescription
-		self.ids['author'].text = self.game.author
-		self.ids['capsuleimage'].text = self.game.capsuleimage
-		self.ids['icon'].text = self.game.icon
-		self.ids['tags'].text = list_to_csv(self.game.tags)
-		self.ids['status'].text = self.game.status
-		self.ids['version'].text = self.game.version
-		self.ids['trailer'].text = self.game.trailer
-		self.ids['screenshots'].text = list_to_csv(self.game.screenshots)
-		self.ids['prices'].text = str(self.game.prices)
+		self.ids['productid'].text = self.game.info["productid"]
+		self.ids['title'].text = self.game.info["title"]
+		self.ids['description'].text = self.game.info["description"]
+		self.ids['longdescription'].text = self.game.info["longdescription"]
+		self.ids['author'].text = self.game.info["author"]
+		self.ids['capsuleimage'].text = self.game.info["capsuleimage"]
+		self.ids['icon'].text = self.game.info["icon"]
+		self.ids['tags'].text = list_to_csv(self.game.info["tags"])
+		self.ids['status'].text = self.game.info["status"]
+		self.ids['version'].text = self.game.info["version"]
+		self.ids['trailer'].text = self.game.info["trailer"]
+		self.ids['screenshots'].text = list_to_csv(self.game.info["screenshots"])
 		try:
-			self.ids['fileslocationwindows'].text = str(self.game.fileslocation["Windows"])
-			self.ids['fileslocationmac'].text = str(self.game.fileslocation["Mac"])
-			self.ids['fileslocationlinux'].text = str(self.game.fileslocation["Linux"])
+			self.ids['fileslocationwindows'].text = str(self.game.info["fileslocation"]["Windows"])
+			self.ids['fileslocationmac'].text = str(self.game.info["fileslocation"]["Mac"])
+			self.ids['fileslocationlinux'].text = str(self.game.info["fileslocation"]["Linux"])
 		except:
 			pass
-		self.ids['executables'].text = str(self.game.executables)
-		self.ids['paymentaddress'].text = self.game.paymentaddress
+		self.ids['executables'].text = str(self.game.info["executables"])
+		self.ids['paymentaddress'].text = self.game.info["paymentaddress"]
 
 
 	def show_store(self):
@@ -203,17 +235,21 @@ class GamePublishEdit(BoxLayout):
 	def create_torrent(self, fileslocation):
 		if os.path.exists(fileslocation):
 			tor = TorrentHandler().make_torrent(fileslocation)
-			return tor
+			print(tor)
 		else:
-			return ""
+			tor = b''
+		print(b64encode(tor).decode('utf-8'))
+		return b64encode(tor).decode('utf-8')
 
 class SelectFilesPopup(ConfirmPopup):
 	def __init__(self, locationresult):
+		config = ConfigParser()
+		config.read('config.ini')
 		super(SelectFilesPopup, self).__init__()
 		self.locationresult = locationresult
 		self.filechooser = FileChooserListView()
 		self.filechooser.dirselect = True
-		self.filechooser.path = os.getcwd() + TORRENT_DATA_PATH
+		self.filechooser.path = os.getcwd() + config["files"]["install_path"]
 		self.ids['layout'].add_widget(self.filechooser)
 
 	def on_ok(self):
@@ -232,9 +268,8 @@ class ConfirmPublishPopup(ConfirmPopup):
 		self.game = game
 
 	def on_ok(self):
-		con = DatabaseConnector()
+		con = DataLayerConnector()
 		con.publish_game(self.game)
-		con.close()
 
 	def on_cancel(self):
 		pass

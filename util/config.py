@@ -1,8 +1,4 @@
 
-INSTALL_PATH = './UserData/InstalledGames/'
-TORRENTS_PATH = './UserData/Torrents/'
-TORRENT_DATA_PATH = './UserData/TorrentData/'
-
 UI_UPDATE_FREQUENCY = 1
 
 COLOR_BG_MAIN = .1, .1, .1, 1
