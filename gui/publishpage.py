@@ -21,6 +21,8 @@ from chia.types.blockchain_format.sized_bytes import bytes32
 
 import os
 import shutil
+import pyzipper
+import json
 
 
 class PublishPage(FloatLayout):
@@ -32,9 +34,9 @@ class PublishPage(FloatLayout):
 		Clock.schedule_once(self.load_games, 0)
 
 	def load_games(self, time):
-
 		self.games = []
 		self.ids.contentview.content.clear_widgets()
+		self.ids['resetbtnimg'].source = "img/ResetIcon.png"
 		config = ConfigParser()
 		config.read('config.ini')
 		self.ids.datastoreidlabel.text = config.get("publishing", "datastore_id")
@@ -43,6 +45,9 @@ class PublishPage(FloatLayout):
 		self.games = con.get_published_games()
 		for game in self.games:
 			self.ids.contentview.content.add_widget(GamePublishEdit(game))
+
+	def reset(self):
+		self.load_games(0)
 
 	def create_game(self):
 		con = DataLayerConnector()
@@ -87,7 +92,15 @@ class GamePublishEdit(BoxLayout):
 		self.ids.title.disabled = self.editdisabled
 		self.ids.description.disabled = self.editdisabled
 		self.ids.longdescription.disabled = self.editdisabled
-		self.ids.author.disabled = self.editdisabled
+		self.ids.contentrating.disabled = self.editdisabled
+		self.ids.developer.disabled = self.editdisabled
+		self.ids.publisher.disabled = self.editdisabled
+		self.ids.website.disabled = self.editdisabled
+		self.ids.twitter.disabled = self.editdisabled
+		self.ids.discord.disabled = self.editdisabled
+		self.ids.instagram.disabled = self.editdisabled
+		self.ids.facebook.disabled = self.editdisabled
+
 		self.ids.capsuleimage.disabled = self.editdisabled
 		self.ids.icon.disabled = self.editdisabled
 		self.ids.tags.disabled = self.editdisabled
@@ -128,7 +141,9 @@ class GamePublishEdit(BoxLayout):
 		self.game.info["title"] = self.ids['title'].text
 		self.game.info["description"] = self.ids['description'].text
 		self.game.info["longdescription"] = self.ids['longdescription'].text
-		self.game.info["author"] = self.ids['author'].text
+		self.game.info["contentrating"] = self.ids['contentrating'].text
+		self.game.info["developer"] = self.ids['developer'].text
+		self.game.info["publisher"] = self.ids['publisher'].text
 		self.game.info["capsuleimage"] = self.ids['capsuleimage'].text
 		self.game.info["icon"] = self.ids['icon'].text
 		self.game.info["tags"] = csv_to_list(self.ids['tags'].text)
@@ -147,13 +162,28 @@ class GamePublishEdit(BoxLayout):
 		print("updating torrents")
 		# try:
 		selected = self.ids['fileslocationwindows'].text
-		desired_name = self.game.get_filename() + "-Windows"
+		desired_name = self.game.get_filename()
 
-		try:
-			shutil.make_archive(data_path + "/" + desired_name, 'zip', selected)
-		except Exception as e:
-			print(f"update_torrents: {e}")
-			return
+		with open(selected + '/version.json', 'w') as f:
+			v = json.dumps({'version': self.game.info["version"]})
+			f.write(v)
+			f.close()
+
+		parent_folder = os.path.dirname(selected)
+		contents = os.walk(selected)
+		with pyzipper.AESZipFile(data_path + '/' + desired_name + '.zip', 'w', compression=pyzipper.ZIP_DEFLATED, encryption=pyzipper.WZ_AES) as zf:
+			zf.setpassword(bytes(self.game.info["password"], 'utf-8'))
+			for root, folders, files in contents:
+				for folder_name in folders:
+					absolute_path = os.path.join(root, folder_name)
+					relative_path = absolute_path.replace(parent_folder + '\\', '')
+					print ("Adding '%s' to archive." % absolute_path)
+					zf.write(absolute_path, relative_path)
+				for file_name in files:
+					absolute_path = os.path.join(root, file_name)
+					relative_path = absolute_path.replace(parent_folder + '\\', '')
+					print ("Adding '%s' to archive." % absolute_path)
+					zf.write(absolute_path, relative_path)
 
 		self.ids['fileslocationwindows'].text = data_path + "/" + desired_name + ".zip"
 		windows_torrent = self.create_torrent(self.ids['fileslocationwindows'].text)
@@ -201,7 +231,9 @@ class GamePublishEdit(BoxLayout):
 		self.ids['title'].text = self.game.info["title"]
 		self.ids['description'].text = self.game.info["description"]
 		self.ids['longdescription'].text = self.game.info["longdescription"]
-		self.ids['author'].text = self.game.info["author"]
+		self.ids['contentrating'].text = self.game.info["contentrating"]
+		self.ids['developer'].text = self.game.info["developer"]
+		self.ids['publisher'].text = self.game.info["publisher"]
 		self.ids['capsuleimage'].text = self.game.info["capsuleimage"]
 		self.ids['icon'].text = self.game.info["icon"]
 		self.ids['tags'].text = list_to_csv(self.game.info["tags"])
@@ -238,7 +270,6 @@ class GamePublishEdit(BoxLayout):
 			print(tor)
 		else:
 			tor = b''
-		print(b64encode(tor).decode('utf-8'))
 		return b64encode(tor).decode('utf-8')
 
 class SelectFilesPopup(ConfirmPopup):

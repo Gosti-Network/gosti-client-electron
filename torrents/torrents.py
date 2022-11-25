@@ -33,7 +33,7 @@ class TorrentHandler(metaclass=Singleton):
 				for torrent in self.session.get_torrents():
 					s = torrent.status()
 					statuses[s.name] = s
-					print(s.state)
+					print(f"{s.name}-> {s.state}: {s.progress}% - {s.download_rate}v | ^{s.upload_rate}")
 
 
 				alerts = self.session.pop_alerts()
@@ -86,7 +86,12 @@ class TorrentHandler(metaclass=Singleton):
 			| libtorrent.torrent_flags.auto_managed \
 			| libtorrent.torrent_flags.duplicate_is_error
 		# self.session.async_add_torrent(params)
-		t = self.session.add_torrent(params)
+		try:
+			t = self.session.add_torrent(params)
+		except Exception as e:
+			print(e)
+			print("Torrent already exists.")
+
 
 
 	def make_torrent(self, datapath):

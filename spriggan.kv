@@ -1,5 +1,4 @@
 #:include gui/gamespage.kv
-#:include gui/library.kv
 #:include gui/publishpage.kv
 #:include gui/mintingpage.kv
 #:include gui/storepage.kv
@@ -27,13 +26,17 @@
 		anchor_x: 'left'
 		anchor_y: 'bottom'
 		Button:
-			text: 'Settings'
 			id: settingsbutton
-			on_press: root.open_settings()
-			max_size: 50, 50
-			height: 50
-			width: 50
+			on_release: root.open_settings()
+			height: 46
+			width: 46
 			size_hint: None, None
+			Image:
+				height: 46
+				width: 46
+				source: 'img/SettingsIcon.png'
+				center_x: self.parent.center_x
+				center_y: self.parent.center_y
 
 
 <SideBar>:
@@ -57,9 +60,9 @@
 			color: util.COLOR_THEME_MAIN
 			text: 'My Games'
 			FloatLayout:
-				LibraryView:
-					size_hint: 1, 1
-					pos_hint: {'x': 0, 'y': 0}
+				# LibraryView:
+				# 	size_hint: 1, 1
+				# 	pos_hint: {'x': 0, 'y': 0}
 
 <ContentViewNormal>:
 	do_default_tab: False
@@ -92,7 +95,7 @@
 	TabbedPanelItem:
 		background_color: util.COLOR_THEME_LIGHT
 		color: util.COLOR_THEME_MAIN
-		text: 'Publish'
+		text: 'Publishing'
 		PublishPage:
 
 	TabbedPanelItem:
@@ -113,7 +116,7 @@
 			pos_hint:{'x': .8, 'y': 0}
 			Button:
 				text: 'Cancel'
-				on_press: root.cancel()
+				on_release: root.cancel()
 			Button:
 				text: 'Ok'
-				on_press: root.ok()
+				on_release: root.ok()

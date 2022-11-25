@@ -51,15 +51,13 @@ class DataLayerConnector():
 		g = json.dumps(game.info)
 		games = await self.__get_published_games(id)
 		for gm in games:
-			print(f"gm{gm.info}")
-			print(f"game{game.info}")
-			if gm.info["title"] == game.info["title"]:
+			if gm.info["productid"] == game.info["productid"]:
 				dl = await DataLayerRpcClient.create('localhost', uint16(self.datalayer_rpc_port), DEFAULT_ROOT_PATH, self.chia_config)
 				update_status = await dl.update_data_store(
 						store_id=hexstr_to_bytes(id),
 						changelist=[
-							{"action":"delete", "key":str.encode(game.info["title"]).hex()},
-							{"action":"insert", "key":str.encode(game.info["title"]).hex(), "value":str.encode(g).hex()}
+							{"action":"delete", "key":str.encode(game.info["productid"]).hex()},
+							{"action":"insert", "key":str.encode(game.info["productid"]).hex(), "value":str.encode(g).hex()}
 						],
 						fee=50000
 				)
@@ -70,7 +68,7 @@ class DataLayerConnector():
 		dl = await DataLayerRpcClient.create('localhost', uint16(self.datalayer_rpc_port), DEFAULT_ROOT_PATH, self.chia_config)
 		update_status = await dl.update_data_store(
 				store_id=hexstr_to_bytes(id),
-				changelist=[{"action":"insert", "key":str.encode(game.info["title"]).hex(), "value":str.encode(g).hex()}],
+				changelist=[{"action":"insert", "key":str.encode(game.info["productid"]).hex(), "value":str.encode(g).hex()}],
 				fee=50000
 		)
 		print(f"status: {update_status}")

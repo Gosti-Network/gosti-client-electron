@@ -2,6 +2,9 @@
 from sys import platform
 import uuid
 import libtorrent
+from kivy.config import ConfigParser
+import random
+import string
 
 class Dev_Status:
 	COMING_SOON = "Coming Soon"
@@ -10,12 +13,15 @@ class Dev_Status:
 
 class Game():
 
-	def __init__(self, productid='', title='', description='', longdescription='', author='',
-				 contentrating='', capsuleimage='', icon='', trailer='', tags=[], status='Coming Soon',
+	def __init__(self, productid='', title='', description='', longdescription='', developer='', publisher='', publisherdid='',
+				 website='', twitter='', discord='', instagram='', facebook='', contentrating='',
+				 capsuleimage='', icon='', banner='', trailer='', tags=[], status='Coming Soon',
 				 version='0.1', screenshots=[],
 				 torrents={"Windows": "", "Mac": "", "Linux": ""},
 				 executables={"Windows": "", "Mac": "", "Linux": ""},
-				 paymentaddress=''):
+				 paymentaddress='', password="temp",
+				 ):
+		self.copies = 1
 		if productid == '':
 			productid = str(uuid.uuid4())
 		self.info = {
@@ -23,10 +29,18 @@ class Game():
 			"title": title,
 			"description": description,
 			"longdescription": longdescription,
-			"author": author,
+			"developer": developer,
+			"publisher": publisher,
+			"website": website,
+			"twitter": twitter,
+			"discord": discord,
+			"instagram": instagram,
+			"facebook": facebook,
+			"publisherdid": publisherdid,
 			"contentrating": contentrating,
 			"capsuleimage": capsuleimage,
 			"icon": icon,
+			"banner": banner,
 			"trailer": trailer,
 			"tags": tags,
 			"status": status,
@@ -35,20 +49,34 @@ class Game():
 			"torrents": torrents,
 			"executables": executables,
 			"paymentaddress": paymentaddress,
+			"password": password,
 		}
+		if password != "temp":
+			self.reset_password()
+
+	def add_copy(self):
+		self.copies += 1
+
+	def reset_password(self):
+		self.info["password"] = ''.join(random.choices(string.ascii_uppercase + string.digits, k=12))
 
 	def from_json(info):
 		g = Game()
+		empty = g.info
 		g.info = info
 		if "productid" not in g.info:
 			g.info["productid"] = str(uuid.uuid4())
+		if "password" not in g.info:
+			g.reset_password()
+
+		for key in empty.keys():
+			if key not in g.info:
+				g.info[key] = empty[key]
+
 		return g
 
 
 	def get_filename(self):
-		return self.info["title"] + '-v-' + self.info["version"]
-
-	def get_torrent_data_filename(self):
 		p = ""
 		if platform == "linux" or platform == "linux2":
 			p = "Linux"
@@ -56,8 +84,17 @@ class Game():
 			p = "Mac"
 		elif platform == "win32":
 			p = "Windows"
+		return self.info["title"].replace(" ", "") + '-' + p
 
-		return self.get_filename() + "-" + p + ".zip"
+	def get_filename_with_version(self):
+		p = ""
+		if platform == "linux" or platform == "linux2":
+			p = "Linux"
+		elif platform == "darwin":
+			p = "Mac"
+		elif platform == "win32":
+			p = "Windows"
+		return self.info["title"].replace(" ", "") + '-v-' + self.info["version"] + '-' + p
 
 	def get_torrent(self):
 		p = ""
@@ -68,7 +105,7 @@ class Game():
 		elif platform == "win32":
 			p = "Windows"
 
-		return libtorrent.bencode(self.info["torrents"][p])
+		return self.info["torrents"][p]
 
 	def set_torrents(self, torrents):
 		for p in torrents.keys():

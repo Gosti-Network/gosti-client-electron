@@ -15,13 +15,13 @@
 			color: util.COLOR_THEME_LIGHT
 			size_hint: .25, 1
 			text: 'Create New Game'
-			on_press: root.create_game()
+			on_release: root.create_game()
 		Button:
 			background_color: util.COLOR_THEME_DARK
 			color: util.COLOR_THEME_LIGHT
 			size_hint: .25, 1
 			text: 'Create New Datastore'
-			on_press: root.create_datastore()
+			on_release: root.create_datastore()
 		BoxLayout:
 			size_hint: .5, 1
 			pos_hint: {'x': 0, 'top': 1}
@@ -35,6 +35,26 @@
 				text: '*********Datastore ID *********'
 				id: datastoreidlabel
 				size_hint: 1, .5
+
+	FloatLayout:
+		id: search
+		size_hint: 1, .05
+		pos_hint: {'x': 0, 'top': 1}
+		Button:
+			background_color: util.COLOR_THEME_DARK
+			color: util.COLOR_THEME_LIGHT
+			id: filter
+			size_hint: .05, None
+			height: 30
+			pos_hint: {'right': 1, 'top': .9}
+			on_release: root.reset()
+			Image:
+				id: resetbtnimg
+				center_x: self.parent.center_x
+				center_y: self.parent.center_y
+				height: 32
+				width: 32
+				size_hint: None, None
 
 	ContentScrollView:
 		id: contentview
@@ -62,11 +82,11 @@
 			pos: self.pos
 			size: self.size
 
-	size: 1024, 2200
+	size: 1024, 1900
 	spacing: 10
 
 	BoxLayout:
-		size_hint: 1, .2
+		size_hint: 1, .3
 		id: capsulecontainer
 
 	BoxLayout:
@@ -113,14 +133,147 @@
 			size_hint: 1, .02
 			Label:
 				color: util.COLOR_THEME_LIGHT
-				text: 'Author'
+				text: 'Developer'
 				size_hint: .2, 1
 			TextInput:
 				background_color: util.COLOR_BG_LIGHT
 				foreground_color: util.COLOR_THEME_MAIN
 				disabled_foreground_color: util.COLOR_THEME_LIGHT
 				cursor_color: util.COLOR_THEME_MAIN
-				id: author
+				id: developer
+				on_focus: root.update_game()
+				size_hint: .5, 1
+				text_hint: ''
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: ''
+				size_hint: .3, 1
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Publisher'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: publisher
+				on_focus: root.update_game()
+				size_hint: .5, 1
+				text_hint: ''
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: ''
+				size_hint: .3, 1
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Website'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: website
+				on_focus: root.update_game()
+				size_hint: .5, 1
+				text_hint: ''
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: ''
+				size_hint: .3, 1
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Twitter'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: twitter
+				on_focus: root.update_game()
+				size_hint: .5, 1
+				text_hint: ''
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: '@username'
+				size_hint: .3, 1
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Discord'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: discord
+				on_focus: root.update_game()
+				size_hint: .5, 1
+				text_hint: ''
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'https://discord.gg/xxxxxxxx'
+				size_hint: .3, 1
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Twitter'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: twitter
+				on_focus: root.update_game()
+				size_hint: .5, 1
+				text_hint: ''
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: ''
+				size_hint: .3, 1
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Instagram'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: instagram
+				on_focus: root.update_game()
+				size_hint: .5, 1
+				text_hint: ''
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: ''
+				size_hint: .3, 1
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Facebook'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: facebook
 				on_focus: root.update_game()
 				size_hint: .5, 1
 				text_hint: ''
@@ -227,6 +380,25 @@
 			size_hint: 1, .02
 			Label:
 				color: util.COLOR_THEME_LIGHT
+				text: 'Banner'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: banner
+				on_focus: root.update_game()
+				size_hint: .5, 1
+				text_hint: ''
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'A URL to your Banner image\n(1200x700 recommended)'
+				size_hint: .3, 1
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Trailer URL'
 				size_hint: .2, 1
 			TextInput:
@@ -284,6 +456,25 @@
 			size_hint: 1, .02
 			Label:
 				color: util.COLOR_THEME_LIGHT
+				text: 'Content Rating'
+				size_hint: .2, 1
+			TextInput:
+				background_color: util.COLOR_BG_LIGHT
+				foreground_color: util.COLOR_THEME_MAIN
+				disabled_foreground_color: util.COLOR_THEME_LIGHT
+				cursor_color: util.COLOR_THEME_MAIN
+				id: contentrating
+				on_focus: root.update_game()
+				size_hint: .5, 1
+				text_hint: ''
+			Label:
+				color: util.COLOR_THEME_LIGHT
+				text: 'Self reported rating in ESRB format\n(E, T, M, A) or age rating (10+, 17+, 18+)'
+				size_hint: .3, 1
+		BoxLayout:
+			size_hint: 1, .02
+			Label:
+				color: util.COLOR_THEME_LIGHT
 				text: 'Game Files (Windows)'
 				size_hint: .2, 1
 			TextInput:
@@ -298,7 +489,7 @@
 				color: util.COLOR_THEME_LIGHT
 				id: fileselectbuttonwindows
 				text: "Select"
-				on_press: root.select_file_location("Windows")
+				on_release: root.select_file_location("Windows")
 				size_hint: .1, 1
 			Label:
 				color: util.COLOR_THEME_LIGHT
@@ -322,7 +513,7 @@
 				color: util.COLOR_THEME_LIGHT
 				id: fileselectbuttonmac
 				text: "Select"
-				on_press: root.select_file_location("Mac")
+				on_release: root.select_file_location("Mac")
 				size_hint: .1, 1
 			Label:
 				color: util.COLOR_THEME_LIGHT
@@ -346,14 +537,14 @@
 				color: util.COLOR_THEME_LIGHT
 				id: fileselectbuttonlinux
 				text: "Select"
-				on_press: root.select_file_location("Linux")
+				on_release: root.select_file_location("Linux")
 				size_hint: .1, 1
 			Label:
 				color: util.COLOR_THEME_LIGHT
 				text: 'The location of the games files'
 				size_hint: .3, 1
 		BoxLayout:
-			size_hint: 1, .05
+			size_hint: 1, .03
 			Label:
 				color: util.COLOR_THEME_LIGHT
 				text: 'Executables'
@@ -400,9 +591,9 @@
 				background_color: util.COLOR_THEME_DARK
 				color: util.COLOR_THEME_LIGHT
 				id: status
-				on_press: root.update_game()
+				on_release: root.update_game()
 				size_hint: .5, 1
-				values: 'Coming Soon', 'In Development', 'Complete'
+				values: 'Coming Soon', 'In Development', 'Early Access', 'Complete'
 			Label:
 				color: util.COLOR_THEME_LIGHT
 				text: ''
@@ -415,16 +606,16 @@
 				color: util.COLOR_THEME_LIGHT
 				id: previewbutton
 				text: "Preview Store Page"
-				on_press: root.show_store()
+				on_release: root.show_store()
 			Button:
 				background_color: util.COLOR_THEME_DARK
 				color: util.COLOR_THEME_LIGHT
 				id: revertbutton
 				text: "Revert"
-				on_press: root.revert()
+				on_release: root.revert()
 			Button:
 				background_color: util.COLOR_THEME_DARK
 				color: util.COLOR_THEME_LIGHT
 				id: publishbutton
 				text: "Publish"
-				on_press: root.publish_edit()
+				on_release: root.publish_edit()

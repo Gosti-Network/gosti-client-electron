@@ -22,10 +22,8 @@ class MainView(FloatLayout):
 		config.read('config.ini')
 		print(config.get("publishing", "enabled"))
 		if config.get("publishing", "enabled") == "1":
-			print("here")
 			self.add_widget(ContentViewPublisher(size_hint=(.8, 1), pos_hint={'x': .2, 'y': 0}))
 		else:
-			print("there")
 			self.add_widget(ContentViewNormal(size_hint=(.8, 1), pos_hint={'x': .2, 'y': 0}))
 		Clock.schedule_once(self.checkconfig, 0)
 

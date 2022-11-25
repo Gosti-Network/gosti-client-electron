@@ -79,7 +79,7 @@ class SettingsPage(BoxLayout):
 			{
 				"type": "bool",
 				"title": "Enable Publishing",
-				"desc": "Enable publishing section",
+				"desc": "Enable publishing section (Must restart Spriggan to see changes)",
 				"section": "publishing",
 				"key": "enabled"
 			},
@@ -90,6 +90,13 @@ class SettingsPage(BoxLayout):
 				"section": "publishing",
 				"key": "datastore_id",
 				"options": datastores
+			},
+			{
+				"type": "path",
+				"title": "Minting Data Path",
+				"desc": "Where torrent files will be stored",
+				"section": "publishing",
+				"key": "minting_data_path"
 			}
 		])
 
