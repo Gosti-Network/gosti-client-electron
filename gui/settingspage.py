@@ -32,6 +32,26 @@ class SettingsPage(BoxLayout):
 		connector = DataLayerConnector()
 		datastores = connector.get_owned_datastores()
 
+		marketplacesettings = json.dumps([
+			{
+				"type": "options",
+				"title": "fingerprint",
+				"desc": "Your wallet fingerprint",
+				"section": "wallet",
+				"key": "fingerprint",
+				"options": fingerprints
+			},
+			{
+				"type": "options",
+				"title": "DID",
+				"desc": "Your DID",
+				"section": "wallet",
+				"key": "did",
+				"options": dids
+			}
+		])
+
+
 		walletsettings = json.dumps([
 			{
 				"type": "options",

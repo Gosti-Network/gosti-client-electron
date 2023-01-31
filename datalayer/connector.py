@@ -13,6 +13,7 @@ from kivy.config import ConfigParser
 
 import asyncio
 import json
+import requests
 
 
 class DataLayerConnector():
@@ -37,7 +38,7 @@ class DataLayerConnector():
 
 	async def __create_datastore(self):
 		dl = await DataLayerRpcClient.create('localhost', uint16(self.datalayer_rpc_port), DEFAULT_ROOT_PATH, self.chia_config)
-		store = await dl.create_data_store(fee=0.00005)
+		store = await dl.create_data_store(fee=500000000000)
 		print(f"datastore: {store}")
 		dl.close()
 		return store
@@ -47,21 +48,30 @@ class DataLayerConnector():
 
 	async def __publish_game(self, game):
 		id = self.get_datastore_id()
-		print(f"game info: {game.info}")
 		g = json.dumps(game.info)
 		games = await self.__get_published_games(id)
 		for gm in games:
 			if gm.info["productid"] == game.info["productid"]:
 				dl = await DataLayerRpcClient.create('localhost', uint16(self.datalayer_rpc_port), DEFAULT_ROOT_PATH, self.chia_config)
-				update_status = await dl.update_data_store(
-						store_id=hexstr_to_bytes(id),
-						changelist=[
-							{"action":"delete", "key":str.encode(game.info["productid"]).hex()},
-							{"action":"insert", "key":str.encode(game.info["productid"]).hex(), "value":str.encode(g).hex()}
-						],
-						fee=50000
-				)
-				print(f"status: {update_status}")
+				# update_status = await dl.update_data_store(
+				# 		store_id=hexstr_to_bytes(id),
+				# 		changelist=[
+				# 			{"action":"delete", "key":str.encode(game.info["productid"]).hex()},
+				# 			{"action":"insert", "key":str.encode(game.info["productid"]).hex(), "value":str.encode(g).hex()}
+				# 		],
+				# 		fee=500000000000
+				# )
+				# print(f"status: {update_status}")
+				params = {"game": json.dumps(game.info)}
+				print(params)
+				response = requests.put(f"http://localhost:3000/requestlisting", params=params)
+				if response.status_code == 200:
+					print("sucessfully fetched the data")
+					print(response.json())
+				else:
+					print(f"Hello person, there's a {response.status_code} error with your request")
+
+
 				dl.close()
 				return update_status
 
@@ -69,7 +79,7 @@ class DataLayerConnector():
 		update_status = await dl.update_data_store(
 				store_id=hexstr_to_bytes(id),
 				changelist=[{"action":"insert", "key":str.encode(game.info["productid"]).hex(), "value":str.encode(g).hex()}],
-				fee=50000
+				fee=500000000000
 		)
 		print(f"status: {update_status}")
 		dl.close()

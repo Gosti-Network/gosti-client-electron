@@ -91,6 +91,7 @@ class GamePublishEdit(BoxLayout):
 		self.ids.productid.disabled = self.editdisabled
 		self.ids.title.disabled = self.editdisabled
 		self.ids.description.disabled = self.editdisabled
+		self.ids.shortdescription.disabled = self.editdisabled
 		self.ids.longdescription.disabled = self.editdisabled
 		self.ids.contentrating.disabled = self.editdisabled
 		self.ids.developer.disabled = self.editdisabled
@@ -140,6 +141,7 @@ class GamePublishEdit(BoxLayout):
 		self.game.info["productid"] = self.ids['productid'].text
 		self.game.info["title"] = self.ids['title'].text
 		self.game.info["description"] = self.ids['description'].text
+		self.game.info["shortdescription"] = self.ids['shortdescription'].text
 		self.game.info["longdescription"] = self.ids['longdescription'].text
 		self.game.info["contentrating"] = self.ids['contentrating'].text
 		self.game.info["developer"] = self.ids['developer'].text
@@ -229,6 +231,7 @@ class GamePublishEdit(BoxLayout):
 		self.game = self.old_game
 		self.ids['productid'].text = self.game.info["productid"]
 		self.ids['title'].text = self.game.info["title"]
+		self.ids['shortdescription'].text = self.game.info["shortdescription"]
 		self.ids['description'].text = self.game.info["description"]
 		self.ids['longdescription'].text = self.game.info["longdescription"]
 		self.ids['contentrating'].text = self.game.info["contentrating"]

@@ -238,10 +238,12 @@ class GameMintingPanel(BoxLayout):
 			minter = Minter(wallet_client, node_client)
 
 			fee_amount = int(float(self.ids['fee_amount'].text)*1000000000000)
+			print(fee_amount)
+			print(int(fee_amount))
 			sell_amount = int(float(self.ids['sell_amount'].text)*1000000000000)
 			print(sell_amount)
 			await minter.submit_spend_bundles(
-				spends, fee_amount, create_sell_offer=1000
+				spends, fee_amount
 			)
 		except Exception as e:
 			print(f"__submit_spend_bundles error: {e}")

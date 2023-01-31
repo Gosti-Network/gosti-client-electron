@@ -1,6 +1,6 @@
-[submodule "chia-blockchain"]
-	path = chia-blockchain
-	url = https://github.com/Chia-Network/chia-blockchain.git
-[submodule "libtorrent"]
-	path = libtorrent
-	url = https://github.com/arvidn/libtorrent.git
+[submodule "SprigganGui"]
+	path = SprigganGui
+	url = https://github.com/Gaerax/SprigganGui.git
+[submodule "spriggan-client-gui"]
+	path = spriggan-client-gui
+	url = https://github.com/Gaerax/spriggan-client-gui.git
