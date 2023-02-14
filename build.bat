@@ -4,4 +4,4 @@ pyinstaller ^
 	-F --windowed ^
 	spriggan-rpc.py
 
-@REM robocopy "dist/spriggan-rpc.exe" "SprigganGui/dist/spriggan-rpc.exe"
+robocopy "./dist/" "./spriggan-client-gui/public/bin/"
