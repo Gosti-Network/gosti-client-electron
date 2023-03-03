@@ -10,7 +10,7 @@ import asyncio
 from urllib.request import urlopen
 import json
 
-from data import Game
+from data import Media
 
 
 class SprigganWallet():
@@ -103,14 +103,14 @@ class SprigganWallet():
 			return False
 
 
-	def get_owned_games(self):
-		return asyncio.run(self.__get_owned_games())
+	def get_owned_media(self):
+		return asyncio.run(self.__get_owned_media())
 
-	async def __get_owned_games(self):
+	async def __get_owned_media(self):
 		dl_client = await DataLayerRpcClient.create('localhost', uint16(self.datalayer_rpc_port), DEFAULT_ROOT_PATH, self.config)
 		wallet_client = await WalletRpcClient.create('localhost', uint16(self.wallet_rpc_port), DEFAULT_ROOT_PATH, self.config)
 		wallets = await wallet_client.get_wallets(wallet_type=WalletType.NFT)
-		games = {}
+		media = {}
 		for wallet in wallets:
 			did = await wallet_client.get_nft_wallet_did(wallet['id'])
 			nftlist = await wallet_client.list_nfts(wallet["id"])
@@ -135,19 +135,19 @@ class SprigganWallet():
 								for p in products["keys_values"]:
 									info = json.loads(str(bytes.fromhex(p["value"][2:]).decode()))
 									if info["productid"] == metadata['collection']['id']:
-										if metadata['collection']['id'] in games.keys():
-											games[metadata['collection']['id']].add_copy()
+										if metadata['collection']['id'] in media.keys():
+											media[metadata['collection']['id']].add_copy()
 										else:
-											games[metadata['collection']['id']] = Game.from_json(info)
+											media[metadata['collection']['id']] = Media.from_json(info)
 							except Exception as e:
 								print(e)
 								dl_client.subscribe(hexstr_to_bytes(attr["value"]))
 
 				except Exception as e:
-					print(f"__get_owned_games: {e}")
+					print(f"__get_owned_media: {e}")
 
 
 		wallet_client.close()
 		dl_client.close()
-		print(f"games:{games}")
-		return games.values()
+		print(f"media:{media}")
+		return media.values()

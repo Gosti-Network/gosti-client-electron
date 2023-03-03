@@ -1,10 +1,10 @@
+import json
 import libtorrent
-import pathlib
 import sys
 import os
 import time
+import traceback
 from threading import Thread
-from kivy.config import ConfigParser
 
 from util import UI_UPDATE_FREQUENCY, Singleton
 
@@ -26,7 +26,9 @@ class TorrentHandler(metaclass=Singleton):
 		self.update_ui_callback = callback
 
 	def seeder(self):
-		self.load_torrents()
+		with open("./spriggan-config.json", 'r') as f:
+			config = json.load(f)
+			self.load_torrents(config["torrentsPath"])
 		while (True):
 			try:
 				statuses = {}
@@ -46,7 +48,7 @@ class TorrentHandler(metaclass=Singleton):
 
 			except Exception as e:
 				print(e)
-				self.load_torrents()
+				# self.load_torrents()
 
 	def get_status(self, file):
 		for torrent in self.session.get_torrents():
@@ -54,50 +56,46 @@ class TorrentHandler(metaclass=Singleton):
 			if status.name == file:
 				return status
 
-	def load_torrents(self):
-		config = ConfigParser()
-		config.read('config.ini')
-		files = os.listdir(config.get("files", "torrents_path"))
+	def load_torrents(self, torrentpath):
+		files = os.listdir(torrentpath)
 		print("files: " + str(files))
 
 		for file in files:
-			self.add_torrent(os.path.join(config.get("files", "torrents_path"), file))
+			if file.endswith(".torrent"):
+				self.add_torrent(file, torrentpath)
 
-	def add_torrent(self, filename):
-		config = ConfigParser()
-		config.read('config.ini')
-		params = libtorrent.add_torrent_params()
-		if filename.startswith('magnet:'):
-			params = libtorrent.parse_magnet_uri(filename)
-		else:
-			print("filename: " + filename)
-			info = libtorrent.torrent_info(filename)
-			print("name:" + info.name())
-			resume_file = os.path.join(config.get("files", "torrents_path"), info.name() + '.fastresume')
-			try:
-				params = libtorrent.read_resume_data(open(resume_file, 'rb').read())
-			except Exception as e:
-				print('failed to open resume file "%s": %s' % (resume_file, e))
-			params.ti = info
-
-		params.save_path = config.get("files", "torrents_data_path")
-		params.storage_mode = libtorrent.storage_mode_t.storage_mode_sparse
-		params.flags |= libtorrent.torrent_flags.duplicate_is_error \
-			| libtorrent.torrent_flags.auto_managed \
-			| libtorrent.torrent_flags.duplicate_is_error
-		# self.session.async_add_torrent(params)
+	def add_torrent(self, filename, torrentpath):
+			
 		try:
+			params = libtorrent.add_torrent_params()
+			if filename.startswith('magnet:'):
+				params = libtorrent.parse_magnet_uri(filename)
+			else:
+				print("filename: " + filename)
+				info = libtorrent.torrent_info(os.path.join(torrentpath, filename))
+				print("name:" + info.name())
+				resume_file = os.path.join(torrentpath, info.name() + '.fastresume')
+				try:
+					params = libtorrent.read_resume_data(open(resume_file, 'rb').read())
+				except Exception as e:
+					print('failed to open resume file "%s": %s' % (resume_file, e))
+				params.ti = info
+
+			params.save_path = torrentpath
+			params.storage_mode = libtorrent.storage_mode_t.storage_mode_sparse
+			params.flags |= libtorrent.torrent_flags.duplicate_is_error \
+				| libtorrent.torrent_flags.auto_managed \
+				| libtorrent.torrent_flags.duplicate_is_error
+			# self.session.async_add_torrent(params)
 			t = self.session.add_torrent(params)
 		except Exception as e:
+			print(traceback.format_exc())
 			print(e)
-			print("Torrent already exists.")
 
 
 
-	def make_torrent(self, datapath):
-		config = ConfigParser()
-		config.read('config.ini')
-		input = os.path.abspath(datapath)
+	def make_torrent(self, sourcePath, torrentPath):
+		input = os.path.abspath(sourcePath)
 		fs = libtorrent.file_storage()
 
 		parent_input = os.path.split(input)[0]
@@ -109,19 +107,16 @@ class TorrentHandler(metaclass=Singleton):
 		t.add_tracker("udp://tracker.torrent.eu.org:451/announce")
 		t.add_tracker("udp://opentor.org:2710/announce")
 		t.set_creator('libtorrent (Spriggan) %s' % libtorrent.__version__)
-		t.name = os.path.basename(datapath)
+		t.name = os.path.basename(sourcePath)
 
 		libtorrent.set_piece_hashes(t, parent_input, lambda x: sys.stdout.write('.'))
 		sys.stdout.write('\n')
 		torrent = t.generate()
-		try:
-			os.mkdir(config.get("files", "torrents_path"))
-		except:
-			pass
-		filename = config.get("files", "torrents_path") + "/" + os.path.basename(datapath) + '.torrent'
+
+		filename = os.path.join(os.path.abspath(torrentPath), os.path.basename(sourcePath) + '.torrent')
 		torrent_code = libtorrent.bencode(torrent)
 		f = open(filename, 'wb')
 		f.write(torrent_code)
 		f.close()
-		self.add_torrent(filename)
+		self.add_torrent(filename, torrentPath)
 		return torrent_code

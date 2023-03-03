@@ -15,10 +15,12 @@ __pycache__/
 
 UserData/*
 offers/*
+mediaData/*
+mediaData
+mintingData
 
 Docs/*
 
-Library/
 
 # C extensions
 *.so

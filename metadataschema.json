@@ -5,7 +5,7 @@
     "sensitive_content": false,
     "collection": {
         "name": "Pong",
-        "id": "**Game ID**",
+        "id": "**Product ID**",
         "attributes": [
             {
                 "type": "game metadata format",
