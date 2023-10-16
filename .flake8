@@ -1,0 +1,5 @@
+[flake8]
+max-line-length = 120
+exclude = ./spriggan-client-gui/**/*
+ignore = E203,W503
+per-file-ignores =

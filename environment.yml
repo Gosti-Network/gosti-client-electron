@@ -25,7 +25,7 @@ dependencies:
     - cffi==1.15.0
     - chardet==3.0.4
     - charset-normalizer==2.0.12
-    - chia-blockchain==1.2.12.dev381
+    - chia-blockchain==1.8.1
     - chiabip158==1.1
     - chiapos==1.0.9
     - chiavdf==1.0.5

@@ -1,0 +1,17 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "ms-python.black-formatter",
+  "git.inputValidationSubjectLength": 100,
+  "search.exclude": {
+    "**/dist": true,
+    "**/build": true,
+    "**/package-lock.json": true,
+    "**/*.po": true
+  },
+  "cSpell.words": [
+    "datalayer",
+    "jsonrpclib",
+    "pyzipper",
+    "Spriggan"
+  ]
+}
