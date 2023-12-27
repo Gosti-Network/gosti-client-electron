@@ -1,0 +1,17 @@
+{
+  "marketplaces": [
+    { "url": "http://localhost:5233", "displayName": "Localhost" },
+    {
+      "url": "http://api.gosti.club",
+      "displayName": "Gosti Marketplace"
+    }
+  ],
+  "activeMarketplace": {
+    "displayName": "Gosti Marketplace",
+    "url": "http://api.gosti.club"
+  },
+  "mintingDataPath": "./gosti-data/minting/",
+  "mediaDataPath": "./gosti-data/media/",
+  "torrentsPath": "./gosti-data/torrents/",
+  "installsPath": "./gosti-data/installs/"
+}

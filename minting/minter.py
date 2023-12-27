@@ -22,7 +22,7 @@ import json
 MINTING_DATA_ROOT = "./mintingdata/"
 
 
-class SprigganMinter:
+class GostiMinter:
     def __init__(self, mintingConfig):
         self.chia_config = load_config(DEFAULT_ROOT_PATH, "config.yaml")
         self.mintingConfig = mintingConfig
@@ -68,7 +68,7 @@ class SprigganMinter:
             if mint_wallet is None:
                 print("Failed to find DID NFT wallet")
                 response = await wallet_client.create_new_nft_wallet(
-                    self.mintingConfig["publisherDid"], name="Spriggan Mint"
+                    self.mintingConfig["publisherDid"], name="Gosti Mint"
                 )
                 print(response)
                 wallets = await wallet_client.get_wallets()

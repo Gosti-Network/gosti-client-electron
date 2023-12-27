@@ -12,6 +12,6 @@
     "datalayer",
     "jsonrpclib",
     "pyzipper",
-    "Spriggan"
+    "Gosti"
   ]
 }

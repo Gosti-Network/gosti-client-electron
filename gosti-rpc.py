@@ -10,9 +10,10 @@ import os
 import shutil
 
 from datalayer.connector import DataLayerConnector
-from torrents.torrents import TorrentHandler
 
-from minting.minter import SprigganMinter
+# from torrents.torrents import TorrentHandler
+
+from minting.minter import GostiMinter
 import pyzipper
 import subprocess
 
@@ -32,7 +33,7 @@ class RequestHandler(SimpleJSONRPCRequestHandler):
         SimpleJSONRPCRequestHandler.end_headers(self)
 
 
-class SprigganRPC:
+class GostiRPC:
     def __init__(self, host, port) -> None:
         self.server = SimpleJSONRPCServer(
             (host, port), requestHandler=RequestHandler, bind_and_activate=True
@@ -44,7 +45,7 @@ class SprigganRPC:
         os.makedirs(os.path.dirname(self.config["torrentsPath"]), exist_ok=True)
         os.makedirs(os.path.dirname(self.config["installsPath"]), exist_ok=True)
 
-        self.torrent_handler = TorrentHandler()
+        # self.torrent_handler = TorrentHandler()
         self.server.register_function(self.ping, "ping")
         self.server.register_function(self.download_media, "downloadMedia")
         self.server.register_function(self.delete_media, "deleteMedia")
@@ -92,9 +93,9 @@ class SprigganRPC:
                 f.write(b64decode(s=media["torrents"][get_operating_system()]))
                 f.close()
 
-            self.torrent_handler.add_torrent(
-                torrentpath=self.config["torrentsPath"], filename=filename + ".torrent"
-            )
+            # self.torrent_handler.add_torrent(
+            #     torrentpath=self.config["torrentsPath"], filename=filename + ".torrent"
+            # )
             return {"status": "Downloading"}
         except Exception as e:
             print("Error in download_media" + str(e))
@@ -107,7 +108,7 @@ class SprigganRPC:
             os.remove(self.config["torrentsPath"] + filename + ".torrent")
             os.remove(self.config["torrentsPath"] + filename + ".zip")
             os.remove(self.config["installsPath"] + filename + ".zip")
-            self.torrent_handler.remove_torrent(filename + ".torrent")
+            # self.torrent_handler.remove_torrent(filename + ".torrent")
             return {"status": "Deleted"}
         except Exception as e:
             print("Error in delete_media" + str(e))
@@ -177,42 +178,43 @@ class SprigganRPC:
             return {"message": "Error in play_media: " + str(e), "status": "error"}
 
     def get_install_status(self, media):
-        try:
-            print("get_install_status")
-            status = self.torrent_handler.get_status(
-                get_filename(media, "windows") + ".zip"
-            )
-            print(
-                f"{status.name}-> {status.state}: {status.progress}% - {status.download_rate}v | ^{status.upload_rate}"
-            )
+        pass
+        # try:
+        #     print("get_install_status")
+        #     status = self.torrent_handler.get_status(
+        #         get_filename(media, "windows") + ".zip"
+        #     )
+        #     print(
+        #         f"{status.name}-> {status.state}: {status.progress}% - {status.download_rate}v | ^{status.upload_rate}"
+        #     )
 
-            return {
-                "status": {
-                    "isDownloaded": os.path.exists(
-                        self.config["torrentsPath"]
-                        + get_filename(media, get_operating_system())
-                        + ".zip"
-                    ),
-                    "isDownloading": (str(status.state) == "downloading"),
-                    "isInstalled": os.path.exists(
-                        self.config["installsPath"]
-                        + get_filename(media, get_operating_system())
-                    ),
-                    "isInstalling": False,
-                    "hasPendingUpdate": False,
-                    "isSeeding": (str(status.state) == "seeding"),
-                    "progress": status.progress,
-                    "downloadRate": status.download_rate,
-                    "uploadRate": status.upload_rate,
-                },
-                "message": "Status retrieved",
-            }
-        except Exception as e:
-            print("Error in get_install_status" + str(e))
-            return {
-                "status": "error",
-                "message": "Error in get_install_status: " + str(e),
-            }
+        #     return {
+        #         "status": {
+        #             "isDownloaded": os.path.exists(
+        #                 self.config["torrentsPath"]
+        #                 + get_filename(media, get_operating_system())
+        #                 + ".zip"
+        #             ),
+        #             "isDownloading": (str(status.state) == "downloading"),
+        #             "isInstalled": os.path.exists(
+        #                 self.config["installsPath"]
+        #                 + get_filename(media, get_operating_system())
+        #             ),
+        #             "isInstalling": False,
+        #             "hasPendingUpdate": False,
+        #             "isSeeding": (str(status.state) == "seeding"),
+        #             "progress": status.progress,
+        #             "downloadRate": status.download_rate,
+        #             "uploadRate": status.upload_rate,
+        #         },
+        #         "message": "Status retrieved",
+        #     }
+        # except Exception as e:
+        #     print("Error in get_install_status" + str(e))
+        #     return {
+        #         "status": "error",
+        #         "message": "Error in get_install_status: " + str(e),
+        #     }
 
     def get_local_data(self, productId):
         try:
@@ -294,7 +296,7 @@ class SprigganRPC:
     def mint_nft_copies(self, mintingConfig):
         try:
             print(mintingConfig)
-            self.minter = SprigganMinter(mintingConfig)
+            self.minter = GostiMinter(mintingConfig)
             self.minter.start_minting()
             print("Minting Started")
             return {"status": "Minting"}
@@ -303,71 +305,73 @@ class SprigganRPC:
             return {"status": "error", "message": "Error in mint_nft_copies: " + str(e)}
 
     def generate_torrents(self, sourcePaths, media):
-        try:
-            print(self.config)
-            print(sourcePaths)
+        pass
+        # try:
+        #     print(self.config)
+        #     print(sourcePaths)
 
-            result = {}
-            for operatingSystem, sourcePath in sourcePaths.items():
-                if len(sourcePath) > 5:
-                    desired_name = get_filename(media, operatingSystem)
-                    # parent_folder = os.path.dirname(sourcePath)
-                    contents = os.walk(sourcePath)
-                    compressed_filename = (
-                        self.config["torrentsPath"] + "/" + desired_name + ".zip"
-                    )
-                    with pyzipper.AESZipFile(
-                        compressed_filename,
-                        "w",
-                        compression=pyzipper.ZIP_DEFLATED,
-                        encryption=pyzipper.WZ_AES,
-                    ) as zf:
-                        zf.setpassword(bytes(media["password"], "utf-8"))
-                        for root, folders, files in contents:
-                            for folder_name in folders:
-                                absolute_path = os.path.join(root, folder_name)
-                                relative_path = absolute_path.replace(
-                                    sourcePath + "\\", ""
-                                )
-                                print("Adding '%s' to archive." % absolute_path)
-                                zf.write(absolute_path, relative_path)
-                            for file_name in files:
-                                absolute_path = os.path.join(root, file_name)
-                                relative_path = absolute_path.replace(
-                                    sourcePath + "\\", ""
-                                )
-                                print("Adding '%s' to archive." % absolute_path)
-                                zf.write(absolute_path, relative_path)
+        #     result = {}
+        #     for operatingSystem, sourcePath in sourcePaths.items():
+        #         if len(sourcePath) > 5:
+        #             desired_name = get_filename(media, operatingSystem)
+        #             # parent_folder = os.path.dirname(sourcePath)
+        #             contents = os.walk(sourcePath)
+        #             compressed_filename = (
+        #                 self.config["torrentsPath"] + "/" + desired_name + ".zip"
+        #             )
+        #             with pyzipper.AESZipFile(
+        #                 compressed_filename,
+        #                 "w",
+        #                 compression=pyzipper.ZIP_DEFLATED,
+        #                 encryption=pyzipper.WZ_AES,
+        #             ) as zf:
+        #                 zf.setpassword(bytes(media["password"], "utf-8"))
+        #                 for root, folders, files in contents:
+        #                     for folder_name in folders:
+        #                         absolute_path = os.path.join(root, folder_name)
+        #                         relative_path = absolute_path.replace(
+        #                             sourcePath + "\\", ""
+        #                         )
+        #                         print("Adding '%s' to archive." % absolute_path)
+        #                         zf.write(absolute_path, relative_path)
+        #                     for file_name in files:
+        #                         absolute_path = os.path.join(root, file_name)
+        #                         relative_path = absolute_path.replace(
+        #                             sourcePath + "\\", ""
+        #                         )
+        #                         print("Adding '%s' to archive." % absolute_path)
+        #                         zf.write(absolute_path, relative_path)
 
-                    result[operatingSystem] = b64encode(
-                        self.torrent_handler.make_torrent(
-                            compressed_filename, self.config["torrentsPath"]
-                        )
-                    ).decode("utf-8")
+        #             result[operatingSystem] = b64encode(
+        #                 self.torrent_handler.make_torrent(
+        #                     compressed_filename, self.config["torrentsPath"]
+        #                 )
+        #             ).decode("utf-8")
 
-            return {"torrents": result}
-        except Exception as e:
-            print("Error in generate_torrents" + str(e))
-            return {"message": "Error in generate_torrents: " + str(e)}
+        #     return {"torrents": result}
+        # except Exception as e:
+        #     print("Error in generate_torrents" + str(e))
+        #     return {"message": "Error in generate_torrents: " + str(e)}
 
     def get_torrent_status(self, media):
-        try:
-            result = self.torrent_handler.get_status(
-                get_filename(media, get_operating_system()) + ".zip"
-            )
-            print(result)
-            return {"status": result}
-        except Exception as e:
-            print("Error in get_torrent_status" + str(e))
-            return {
-                "status": "error",
-                "message": "Error in get_torrent_status: " + str(e),
-            }
+        pass
+        # try:
+        #     result = self.torrent_handler.get_status(
+        #         get_filename(media, get_operating_system()) + ".zip"
+        #     )
+        #     print(result)
+        #     return {"status": result}
+        # except Exception as e:
+        #     print("Error in get_torrent_status" + str(e))
+        #     return {
+        #         "status": "error",
+        #         "message": "Error in get_torrent_status: " + str(e),
+        #     }
 
     def get_config(self):
         print("get_config")
         try:
-            with open("./spriggan-config.json", "r") as f:
+            with open("./gosti-config.json", "r") as f:
                 config = json.load(f)
                 return {"config": config, "message": "Config loaded from " + f.name}
         except Exception as e:
@@ -377,15 +381,15 @@ class SprigganRPC:
                     "marketplaces": [
                         {"url": "http://localhost:5233", "displayName": "Localhost"},
                         {
-                            "url": "http://api.spriggan.club",
-                            "displayName": "Spriggan Marketplace",
+                            "url": "http://api.gosti.club",
+                            "displayName": "Gosti Marketplace",
                         },
                     ],
-                    "activeMarketplace": "Spriggan Marketplace",
-                    "mintingDataPath": "./spriggan-data/minting/",
-                    "mediaDataPath": "./spriggan-data/media/",
-                    "torrentsPath": "./spriggan-data/torrents/",
-                    "installsPath": "./spriggan-data/installs/",
+                    "activeMarketplace": "Gosti Marketplace",
+                    "mintingDataPath": "./gosti-data/minting/",
+                    "mediaDataPath": "./gosti-data/media/",
+                    "torrentsPath": "./gosti-data/torrents/",
+                    "installsPath": "./gosti-data/installs/",
                 },
                 "message": "Error in get_config: " + str(e),
             }
@@ -394,7 +398,7 @@ class SprigganRPC:
         print("save_config")
         self.config = config
         try:
-            with open("./spriggan-config.json", "w") as f:
+            with open("./gosti-config.json", "w") as f:
                 json.dump(obj=config, fp=f)
                 f.close()
             return {"message": "Config saved to " + f.name}
@@ -427,6 +431,6 @@ def get_operating_system():
 
 
 if __name__ == "__main__":
-    spriggan = SprigganRPC("localhost", 5235)
-    TorrentHandler()
-    spriggan.serve()
+    gosti = GostiRPC("localhost", 5235)
+    # TorrentHandler()
+    gosti.serve()

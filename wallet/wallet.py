@@ -7,7 +7,7 @@ from chia.wallet.util.wallet_types import WalletType
 import asyncio
 
 
-class SprigganWallet:
+class GostiWallet:
     def __init__(self):
         self.config = load_config(DEFAULT_ROOT_PATH, "config.yaml")
         self.wallet_rpc_port = self.config["wallet"]["rpc_port"]

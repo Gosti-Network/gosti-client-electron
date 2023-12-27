@@ -17,8 +17,8 @@ def list_to_csv(list):
     csv = ""
     try:
         csv = list[0]
-        for l in range(1, len(list)):
-            csv += ", " + list[l]
+        for item in range(1, len(list)):
+            csv += ", " + list[item]
     except Exception as e:
         print(e)
         pass
